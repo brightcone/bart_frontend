@@ -18,6 +18,7 @@ def lambda_handler(event, context):
     # Jira API details
     url = "https://boppanasurya58.atlassian.net/rest/api/3/issue"
     api_token = "ATATT3xFfGF0uu1V_Vm8Peeqbh-om5Hi4waLP2TXH3zTQq8EN-QVRl6FsFBDLulAiJEeVDUKQDBAsS2meD6evbVEDHl_p9WbXM9cz9y2HL5l3eM3My50dqpCFxAyrYmxfRXyxW21PYRAAwPanQ8JykFr9inR_3UGNS9PjvFzJhBgTOi-9zS83zg=188EF2B8"
+    # Replace the api_token with a new token (this one is expired)
     jira_emailid = "boppanasurya58@gmail.com"
     
     # HTTP headers
