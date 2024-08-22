@@ -4,6 +4,10 @@ import AWS from 'aws-sdk';
 import Webcam from 'react-webcam';
 import trainLogo from '../assets/image 45.svg';
 import background from '../assets/b1.jpg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; // Import eye icons
+
+
 
 const styles = {
     container: {
@@ -30,13 +34,30 @@ const styles = {
     signupBox: {
         position: 'relative',
         width: '400px',
+        maxHeight: '80vh', // Set a maximum height
         padding: '30px',
         backgroundColor: 'lightgray',
         borderRadius: '25px',
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         textAlign: 'center',
         zIndex: 2,
-        overflow: 'hidden',
+        overflowY: 'auto', // Enable vertical scrolling if needed
+    },
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: '20px',
+    },
+    trainLogo: {
+        width: '50px',
+        height: '50px',
+        marginRight: '10px',
+    },
+    profileText: {
+        color: '#000', // Black color for text
+        fontSize: '24px',
+        fontWeight: 'bold',
     },
     input: {
         width: '100%',
@@ -60,17 +81,40 @@ const styles = {
     webcamContainer: {
         marginBottom: '15px',
     },
-    profileText: {
-        color: '#fff',
-        fontSize: '50px',
-        fontWeight: 'bold',
-        marginLeft: '20px',
-    },
     errorBox: {
         color: 'red',
         marginBottom: '15px',
     },
+    linkContainer: {
+        marginTop: '20px',
+    },
+    link: {
+        color: '#007bff',
+        textDecoration: 'none',
+    },
+    passwordToggle: {
+        position: 'absolute',
+        right: '10px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        cursor: 'pointer',
+    },
+    inputContainer: {
+        position: 'relative',
+    },
+    passwordInput: {
+        width: '100%',
+        padding: '8px',
+        paddingRight: '10px', // Adjust padding to make space for the icon
+        marginBottom: '15px',
+        borderRadius: '25px',
+        border: '1px solid #ddd',
+        fontSize: '14px',
+        display: 'flex',
+    },
 };
+
+
 
 // Configure AWS SDK
 AWS.config.update({
@@ -90,6 +134,8 @@ const SignupPage = () => {
     const [capturedImage, setCapturedImage] = useState(null);
     const [error, setError] = useState('');
     const [cameraOn, setCameraOn] = useState(false);
+    const [passwordVisible, setPasswordVisible] = useState(false); // State for password visibility
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false); // State for confirm password visibility
     const navigate = useNavigate();
     const webcamRef = useRef(null);
 
@@ -227,22 +273,36 @@ const SignupPage = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     onKeyDown={handleKeyDown}
                 />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    style={styles.input}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
-                <input
-                    type="password"
-                    placeholder="Re-enter Password"
-                    style={styles.input}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
+                <div style={styles.inputContainer}>
+                    <input
+                        type={passwordVisible ? 'text' : 'password'}
+                        placeholder="Password"
+                        style={styles.passwordInput}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <FontAwesomeIcon
+                        icon={passwordVisible ? faEye : faEyeSlash}
+                        style={styles.passwordToggle}
+                        onClick={() => setPasswordVisible(!passwordVisible)}
+                    />
+                </div>
+                <div style={styles.inputContainer}>
+                    <input
+                        type={confirmPasswordVisible ? 'text' : 'password'}
+                        placeholder="Re-enter Password"
+                        style={styles.passwordInput}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <FontAwesomeIcon
+                        icon={confirmPasswordVisible ? faEye : faEyeSlash}
+                        style={styles.passwordToggle}
+                        onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                    />
+                </div>
                 {cameraOn && (
                     <div style={styles.webcamContainer}>
                         <Webcam
@@ -313,13 +373,30 @@ export default SignupPage;
 //     signupBox: {
 //         position: 'relative',
 //         width: '400px',
+//         maxHeight: '80vh', // Set a maximum height
 //         padding: '30px',
 //         backgroundColor: 'lightgray',
 //         borderRadius: '25px',
 //         boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
 //         textAlign: 'center',
 //         zIndex: 2,
-//         overflow: 'hidden', // Ensure content fits within the box
+//         overflowY: 'auto', // Enable vertical scrolling if needed
+//     },
+//     header: {
+//         display: 'flex',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         marginBottom: '20px',
+//     },
+//     trainLogo: {
+//         width: '50px',
+//         height: '50px',
+//         marginRight: '10px',
+//     },
+//     profileText: {
+//         color: '#000', // Black color for text
+//         fontSize: '24px',
+//         fontWeight: 'bold',
 //     },
 //     input: {
 //         width: '100%',
@@ -343,17 +420,20 @@ export default SignupPage;
 //     webcamContainer: {
 //         marginBottom: '15px',
 //     },
-//     profileText: {
-//         color: '#fff',
-//         fontSize: '50px',
-//         fontWeight: 'bold',
-//         marginLeft: '20px',
-//     },
 //     errorBox: {
 //         color: 'red',
 //         marginBottom: '15px',
 //     },
+//     linkContainer: {
+//         marginTop: '20px',
+//     },
+//     link: {
+//         color: '#007bff',
+//         textDecoration: 'none',
+//     },
 // };
+
+
 
 // // Configure AWS SDK
 // AWS.config.update({
@@ -377,19 +457,22 @@ export default SignupPage;
 //     const webcamRef = useRef(null);
 
 //     const capture = () => {
-//         setCameraOn(true);
+//         setCameraOn(true); // Turn on the camera
 
-//         if (webcamRef.current) {
-//             const imageSrc = webcamRef.current.getScreenshot();
-//             if (imageSrc) {
-//                 setCapturedImage(imageSrc);
-//                 setCameraOn(false); // Turn off the camera after capturing
+//         // Delay capture to give the webcam time to initialize
+//         setTimeout(() => {
+//             if (webcamRef.current) {
+//                 const imageSrc = webcamRef.current.getScreenshot();
+//                 if (imageSrc) {
+//                     setCapturedImage(imageSrc);
+//                     setCameraOn(false); // Turn off the camera after capturing
+//                 } else {
+//                     console.error('Failed to capture image.');
+//                 }
 //             } else {
-//                 console.error('Failed to capture image.');
+//                 console.error('Webcam reference is null.');
 //             }
-//         } else {
-//             console.error('Webcam reference is null.');
-//         }
+//         }, 500); // Delay capture by 500ms
 //     };
 
 //     const handleSignup = async () => {
@@ -428,7 +511,7 @@ export default SignupPage;
 //                 ContentType: 'image/jpeg',
 //             };
 
-//             const imageUploadResult = await s3.upload(imageParams).promise();
+//             await s3.upload(imageParams).promise();
 
 //             // Store user details in S3
 //             const userParams = {
@@ -444,7 +527,7 @@ export default SignupPage;
 //                 ContentType: 'application/json',
 //             };
 
-//             const userUploadResult = await s3.upload(userParams).promise();
+//             await s3.upload(userParams).promise();
 
 //             alert('Signup successful');
 //             navigate('/login');
@@ -559,3 +642,5 @@ export default SignupPage;
 // };
 
 // export default SignupPage;
+
+
