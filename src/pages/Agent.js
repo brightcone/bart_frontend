@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import ReactLoading from 'react-loading';
+import styled, { keyframes } from 'styled-components';
 
 const Agent = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +41,10 @@ const Agent = () => {
     useEffect(() => {
         endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
+
+
+
+
 
     const OptionCard = ({ option, onClick }) => (
         <div
@@ -189,7 +193,6 @@ const Agent = () => {
         );
     };
 
-
     const TicketCard = ({ ticketNo, link, assignedTo, time }) => (
         <div
             style={{
@@ -234,55 +237,65 @@ const Agent = () => {
         </div>
     );
 
+    const dotFlashing = keyframes`
+    0% {
+      opacity: 1;
+    }
+    50%, 100% {
+      opacity: 0;
+    }
+  `;
+
+    const Dot = styled.span`
+    font-size: 34px;
+    color: #001f3f;
+    animation: ${dotFlashing} 1s infinite linear;
+    background: '#fff'; 
+    margin: 0 1px;  // Adjust margin to control spacing between dots
+
+    &:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+   
+ 
+  `;
+
+    const DotLoader = () => (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '7px', padding: '0', background: '#fff', }}>
+            <Dot>•</Dot>
+            <Dot>•</Dot>
+            <Dot>•</Dot>
+
+        </div>
+    );
 
 
 
-    const typingEffect = async (messageText, delay = 50) => {
+    const typingEffect = (messageText, delay = 50) => {
         return new Promise(resolve => {
             let currentIndex = 0;
-            const interval = setInterval(() => {
+            let interval = setInterval(() => {
                 if (currentIndex < messageText.length) {
                     setMessages(prevMessages => {
-                        // Create a copy of the messages without the last 'Typing...' message
-                        const newMessages = [...prevMessages];
-                        if (newMessages[newMessages.length - 1]?.isLoading) {
-                            newMessages.pop();
-                        }
-
-                        // Add the new message with the typed characters
+                        const newMessages = prevMessages.slice(0, -1);
                         newMessages.push({
                             text: messageText.substring(0, currentIndex + 1),
                             isUserMessage: false,
                             isLoading: true
                         });
-
                         return newMessages;
                     });
-
                     currentIndex++;
                 } else {
                     clearInterval(interval);
-
-                    // Replace the loading message with the final completed message
-                    setMessages(prevMessages => {
-                        const newMessages = [...prevMessages];
-                        if (newMessages[newMessages.length - 1]?.isLoading) {
-                            newMessages.pop();
-                        }
-                        newMessages.push({
-                            text: messageText,
-                            isUserMessage: false,
-                            isLoading: false
-                        });
-                        return newMessages;
-                    });
-
                     resolve();
                 }
             }, delay);
         });
     };
-
 
     const storeMessage = async (message, isUserMessage) => {
         try {
@@ -312,7 +325,11 @@ const Agent = () => {
         setIsLoading(true);
 
         const newMessage = { text: actualOTP ? "Done!" : input, isUserMessage: true };
-        setMessages(prevMessages => [...prevMessages, newMessage, { text: 'Typing...', isUserMessage: false, isLoading: true }]);
+        setMessages(prevMessages => [
+            ...prevMessages,
+            newMessage,
+            { text: <DotLoader />, isUserMessage: false, isLoading: true }
+        ]);
         await storeMessage(input, true);
 
         const client = new BedrockAgentRuntimeClient({
@@ -336,7 +353,6 @@ const Agent = () => {
             }
 
             let fullResponse = '';
-
             const decoder = new TextDecoder('utf-8');
 
             const response = await client.send(command);
@@ -355,12 +371,10 @@ const Agent = () => {
                     }
                 }
 
-                const isOptionMessage = fullResponse.includes("Can you please provide me with the application for which you need to change the password");
+                const isOptionMessage = fullResponse.includes("Can you please provide me with the application for which you need to change the password") || fullResponse.includes("Can you please provide me with the following details? - Application for which the password needs to be changed");
                 const isOTPMessage = fullResponse.includes("Can you please provide me with the correct OTP?") || fullResponse.includes("An OTP has been sent to your email:");
                 const isTicketMessage = fullResponse.includes("The Jira ticket was created successfully!");
 
-                //await typingEffect(fullResponse);
-                setMessages(prevMessages => prevMessages.slice(0, -1));
                 await typingEffect(fullResponse);
 
                 setMessages(prevMessages => {
@@ -374,7 +388,6 @@ const Agent = () => {
                     return newMessages;
 
                 });
-
                 if (isTicketMessage) {
                     console.log("Full Response:", fullResponse);
 
@@ -509,6 +522,8 @@ const Agent = () => {
             cursor: 'pointer',
             marginLeft: '10px',
         },
+
+
     };
 
     return (
@@ -539,25 +554,30 @@ const Agent = () => {
                         key={index}
                         style={{
                             alignSelf: message.isUserMessage ? 'flex-end' : 'flex-start',
-                            backgroundColor: message.isLoading ? 'transparent' : (message.isUserMessage ? '#001F3F' : '#f8f8f8'),
+                            backgroundColor: message.isUserMessage ? '#001F3F' : '#f8f8f8',
                             color: message.isUserMessage ? '#fff' : '#000',
                             padding: '10px 20px',
                             borderRadius: '10px',
                             marginBottom: '10px',
                             maxWidth: '80%',
-                            boxShadow: message.isLoading ? 'none' : '0 2px 4px rgba(0, 0, 0, 0.1)',
+                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                         }}
                     >
-                        {
-                            message.isLoading ? (
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'transparent', padding: '0px' }}>
-                                    <ReactLoading type="spinningBubbles" color="#001F3F" height={30} width={30} />
-                                </div>
-                            ) : (
-                                <span>{message.text}</span>
-                            )
-                        }
+                        {message.text}
+                        {message.isLoading && message.typingEffect}
 
+
+                        {message.showOptions && (
+                            <div>
+                                {options.map((option) => (
+                                    <OptionCard
+                                        key={option.id}
+                                        option={option}
+                                        onClick={() => handleMessageSend(option.text)}
+                                    />
+                                ))}
+                            </div>
+                        )}
                         {message.showOTP && (
                             <OTPInputCard
                                 otp={otp} // Pass otp state
