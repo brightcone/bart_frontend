@@ -11,6 +11,7 @@ import ChatPage from './components/ChatPage';
 import HistoryPage from './components/HistoryPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import FacialAuthComponent from './components/FacialAuthComponent';
 
 const styles = {
   app: {
@@ -162,7 +163,9 @@ const App = () => {
                   <Route path="/chat" element={<ChatPage />} />
                   <Route path="/login" element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
                   <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/facial-auth" element={<FacialAuthComponent />} />
                   <Route path="*" element={<Navigate to="/" />} />
+
                 </Routes>
               </div>
             </>
