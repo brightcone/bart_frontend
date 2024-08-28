@@ -4,13 +4,13 @@ import Dashboard from './pages/Dashboard';
 import Sidebar from './components/Sidebar';
 import TemplatesSidebar from './components/TemplatesSidebar';
 import TicketsSidebar from './components/TicketsSidebar';
-import NewChatSidebar from './components/NewChatSidebar';
 import SearchSidebar from './components/SearchSidebar';
 import Agent from './pages/Agent';
 import ChatPage from './components/ChatPage';
 import HistoryPage from './components/HistoryPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import FacialAuthComponent from './components/FacialAuthComponent';
 
 const styles = {
   app: {
@@ -87,6 +87,7 @@ const AppWrapper = ({ children, isAuthenticated }) => {
 const App = () => {
   const [activeSidebar, setActiveSidebar] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isTemplatesSidebarOpen, setIsTemplatesSidebarOpen] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -102,6 +103,9 @@ const App = () => {
 
   const toggleSidebar = (sidebarName) => {
     setActiveSidebar((prevSidebar) => (prevSidebar === sidebarName ? null : sidebarName));
+  };
+  const toggleTemplatesSidebar = () => {
+    setIsTemplatesSidebarOpen(!isTemplatesSidebarOpen);
   };
 
   const handleLogout = () => {
@@ -119,11 +123,11 @@ const App = () => {
               <div style={styles.sidebarContainer}>
                 <Sidebar
                   toggleTemplates={() => toggleSidebar('Templates')}
-                  toggleNewChat={() => toggleSidebar('NewChat')}
+                  // toggleNewChat={() => toggleSidebar('NewChat')}
                   toggleSearch={() => toggleSidebar('Search')}
                   toggleHistory={() => toggleSidebar('History')}
                   toggleTickets={() => toggleSidebar('Tickets')}
-                  onLogout={handleLogout} // Pass logout handler to Sidebar
+                  // onLogout={handleLogout} // Pass logout handler to Sidebar
                 />
                 <TemplatesSidebar
                   isOpen={activeSidebar === 'Templates'}
@@ -132,13 +136,15 @@ const App = () => {
                     ...(activeSidebar === 'Templates' ? styles.sidebarOpen : {}),
                   }}
                 />
-                <NewChatSidebar
-                  isOpen={activeSidebar === 'NewChat'}
-                  style={{
-                    ...styles.sidebar,
-                    ...(activeSidebar === 'NewChat' ? styles.sidebarOpen : {}),
-                  }}
-                />
+                <TemplatesSidebar 
+  isOpen={activeSidebar === 'Templates'}
+  onClose={() => setActiveSidebar(null)}
+  style={{
+    ...styles.sidebar,
+    ...(activeSidebar === 'Templates' ? styles.sidebarOpen : {}),
+  }}
+/>
+                
                 <SearchSidebar
                   isOpen={activeSidebar === 'Search'}
                   style={{
@@ -156,13 +162,15 @@ const App = () => {
               </div>
               <div style={{ ...styles.mainContent, marginLeft: isAuthenticated ? '300px' : '0' }}>
                 <Routes>
-                  <Route path="/" element={<Dashboard isAnySidebarOpen={isAnySidebarOpen} />} />
-                  <Route path="/agent" element={<Agent />} />
+                <Route path="/" element={<Dashboard isAnySidebarOpen={isAnySidebarOpen} />} />
+                <Route path="/agent" element={<Agent />} />
                   <Route path="/history" element={<HistoryPage />} />
-                  <Route path="/chat" element={<ChatPage />} />
+                  {/* <Route path="/chat" element={<ChatPage />} /> */}
                   <Route path="/login" element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
                   <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/facial-auth" element={<FacialAuthComponent />} />
                   <Route path="*" element={<Navigate to="/" />} />
+
                 </Routes>
               </div>
             </>

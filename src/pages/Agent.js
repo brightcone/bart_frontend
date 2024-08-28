@@ -6,18 +6,46 @@ import axios from 'axios';
 import { IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import styled, { keyframes } from 'styled-components';
+import FacialAuthComponent from '../components/FacialAuthComponent';
 
+const BlurredOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const CircularContainer = styled.div`
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+`;
 const Agent = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [sessionId, setSessionId] = useState('');
     const [messages, setMessages] = useState([]);
     const endOfMessagesRef = useRef(null);
     const hasSentInitialMessage = useRef(false);
-    const typingTimeoutRef = useRef(null); // Ref to manage typing timeout
-    const [otp, setOtp] = useState(['', '', '', '', '', '']); // Added OTP state
-
+    const typingTimeoutRef = useRef(null);
+    const [otp, setOtp] = useState(['', '', '', '', '', '']);
+    const [isMasked, setIsMasked] = useState(true);
     const [showOTP, setShowOTP] = useState(false);
-
+    const [videoVerificationShown, setVideoVerificationShown] = useState(false);
+    const [showFacialAuth, setShowFacialAuth] = useState(false);
+    const [facialAuthLink, setFacialAuthLink] = useState('');
+    const [hasShownVideoVerification, setHasShownVideoVerification] = useState(false);
+    const [isVerificationCompleted, setIsVerificationCompleted] = useState(false);
+    const [hasSentVerificationMessage, setHasSentVerificationMessage] = useState(false);
     const options = [
         { id: 1, text: 'Email' },
         { id: 2, text: 'Employee Portal' },
@@ -31,18 +59,37 @@ const Agent = () => {
     useEffect(() => {
         setSessionId(uuidv4());
     }, []);
+
     useEffect(() => {
         if (sessionId && !hasSentInitialMessage.current) {
             handleMessageSend(initialPrompt);
             hasSentInitialMessage.current = true;
         }
-    }, [sessionId]);
+    }, [sessionId, initialPrompt]);
 
     useEffect(() => {
         endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    useEffect(() => {
+        console.log('Messages:', messages);
+    }, [messages]);
+    useEffect(() => {
+        if (isVerificationCompleted && !hasSentVerificationMessage) {
+            handleMessageSend("User verified successfully.");
+            setHasSentVerificationMessage(true);
+        }
+    }, [isVerificationCompleted, hasSentVerificationMessage]);
 
+    const handleAuthComplete = () => {
+        setShowFacialAuth(false);
+        setIsVerificationCompleted(true);
+    };
+
+
+    const handleAuthClose = () => {
+        setShowFacialAuth(false);
+    };
 
 
 
@@ -252,15 +299,13 @@ const Agent = () => {
     animation: ${dotFlashing} 1s infinite linear;
     background: '#fff'; 
     margin: 0 1px;  // Adjust margin to control spacing between dots
-
+  
     &:nth-child(2) {
       animation-delay: 0.3s;
     }
     &:nth-child(3) {
       animation-delay: 0.6s;
     }
-   
- 
   `;
 
     const DotLoader = () => (
@@ -272,7 +317,9 @@ const Agent = () => {
         </div>
     );
 
-
+    const handleAttachFile = () => {
+        // Implement file attachment logic here
+    };
 
     const typingEffect = (messageText, delay = 50) => {
         return new Promise(resolve => {
@@ -309,7 +356,7 @@ const Agent = () => {
 
             await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
                 action: 'store',
-                username: username,
+                email: username,
                 password: password,
                 sessionId: sessionId,
                 message: message,
@@ -320,133 +367,194 @@ const Agent = () => {
         }
     };
 
+    const VideoVerificationCard = ({ link, onVerificationComplete }) => (
+        <div style={styles.videoVerificationCard} onClick={() => {
+            setFacialAuthLink(link);
+            setShowFacialAuth(true);
+        }}>
+            <div style={{
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: '-10px',
+                marginTop: '-10px',
+                marginLeft: '-20px',
+                marginRight: '-20px',
+                width: '100%',
+                maxWidth: '500px',
+                padding: '10px 45px',
+                borderRadius: '10px',
+                fontSize: '16px',
+                border: '1px solid #001f3f',
+                color: '#fff',
+                backgroundColor: '#001f3f',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                transition: 'background-color 0.3s, box-shadow 0.3s',
+            }}
+            >
+                <div style={{ display: 'flex', width: '100%', marginBottom: '8px' }}>
+                    <div style={{ flex: 1, fontWeight: 'bold' }}>Video Verification</div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    <div style={{ fontSize: '13px', color: '#fafafa' }}>Click here to proceed</div>
+                    <a href={link} target="_blank" rel="noopener noreferrer" style={{ color: '#007bff', textDecoration: 'none' }}>View Video Verification</a>
+                </div>
+            </div>
+        </div>
+    );
 
     const handleMessageSend = async (input, actualOTP = null) => {
+        if (input === "User verified successfully." && hasSentVerificationMessage) {
+            return; // Exit early if this specific message has already been sent
+        }
         setIsLoading(true);
-
-        const newMessage = { text: actualOTP ? "Done!" : input, isUserMessage: true };
-        setMessages(prevMessages => [
-            ...prevMessages,
-            newMessage,
-            { text: <DotLoader />, isUserMessage: false, isLoading: true }
-        ]);
-        await storeMessage(input, true);
-
-        const client = new BedrockAgentRuntimeClient({
-            region: "us-east-1",
-            credentials: {
-                accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-                secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+        try {
+            // Your existing API call and response handling...
+    
+            if (input === "User verified successfully.") {
+                setHasSentVerificationMessage(true); // Update the state here as well
             }
-        });
-
-        const command = new InvokeAgentCommand({
-            agentId: "U3YHVQFHVA",
-            agentAliasId: "5OMM0I4NH3",
-            sessionId: sessionId,
-            inputText: actualOTP ? input : newMessage.text  // Use actual OTP if present
-        });
+        } finally {
+            setIsLoading(false);
+        }
 
         try {
-            if (actualOTP) {
-                console.log("OTP received by the agent:", actualOTP); // Log the OTP
-            }
+            const newMessage = { text: actualOTP ? "Done!" : input, isUserMessage: true };
+            setMessages(prevMessages => [
+                ...prevMessages,
+                newMessage,
+                { text: <DotLoader />, isUserMessage: false, isLoading: true }
+            ]);
+            await storeMessage(input, true);
 
-            let fullResponse = '';
-            const decoder = new TextDecoder('utf-8');
+            const client = new BedrockAgentRuntimeClient({
+                region: "us-east-1",
+                credentials: {
+                    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+                    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+                }
+            });
 
-            const response = await client.send(command);
-            console.log('API Response:', response);
+            const command = new InvokeAgentCommand({
+                agentId: "U3YHVQFHVA",
+                //agentAliasId: "2QH4N82GG0",
+                agentAliasId: "GX5MSL1QQU",
+                sessionId: sessionId,
+                inputText: actualOTP ? input : newMessage.text
+            });
 
-            if (response.completion) {
-                for await (const event of response.completion) {
-                    if (event.chunk && event.chunk.bytes) {
-                        try {
-                            const byteArray = new Uint8Array(event.chunk.bytes);
-                            const decodedString = decoder.decode(byteArray, { stream: true });
-                            fullResponse += decodedString;
-                        } catch (decodeError) {
-                            console.error("Error decoding chunk:", decodeError);
-                        }
-                    }
+            try {
+                if (actualOTP) {
+                    console.log("OTP received by the agent:", actualOTP);
                 }
 
-                const isOptionMessage = fullResponse.includes("Can you please provide me with the application for which you need to change the password") || fullResponse.includes("Can you please provide me with the following details? - Application for which the password needs to be changed");
-                const isOTPMessage = fullResponse.includes("Can you please provide me with the correct OTP?") || fullResponse.includes("An OTP has been sent to your email:");
-                const isTicketMessage = fullResponse.includes("The Jira ticket was created successfully!");
+                let fullResponse = '';
+                const decoder = new TextDecoder('utf-8');
 
-                await typingEffect(fullResponse);
+                const response = await client.send(command);
+                console.log('API Response:', response);
+
+                if (response.completion) {
+                    for await (const event of response.completion) {
+                        if (event.chunk && event.chunk.bytes) {
+                            try {
+                                const byteArray = new Uint8Array(event.chunk.bytes);
+                                const decodedString = decoder.decode(byteArray, { stream: true });
+                                fullResponse += decodedString;
+                            } catch (decodeError) {
+                                console.error("Error decoding chunk:", decodeError);
+                            }
+                        }
+                    }
+
+                    await typingEffect(fullResponse);
+
+                    const isOptionMessage = fullResponse.includes("Please provide me with the application you want to change the password for and your email address.")||fullResponse.includes("Which application do you want to change the password for?") ;
+                    const isOTPMessage = fullResponse.includes("Please enter the OTP to proceed.")||fullResponse.includes("OTP is invalid or has expired. Please try again. If you need further assistance, please let me know.")||fullResponse.includes("OTP is invalid or has expired.");
+                    const isTicketMessage = fullResponse.includes("The Jira ticket was created successfully!");
+                    const isVideoVerificationMessage = fullResponse.includes("Please complete the video verification process before proceeding with the password reset.")|| fullResponse.includes("Please complete video verification before proceeding.");
+                    const videoVerificationLink = isVideoVerificationMessage ? fullResponse.match(/https:\/\/\S+/)?.[0]?.split(' ')[0] : null;
+
+                    setMessages(prevMessages => {
+                        const newMessages = prevMessages.slice(0, -1);
+                        newMessages.push({
+                            text: fullResponse,
+                            isUserMessage: false,
+                            showOptions: isOptionMessage,
+                            showOTP: isOTPMessage,
+                            showVideoVerification: isVideoVerificationMessage,
+                            link: isVideoVerificationMessage ? fullResponse.match(/https:\/\/\S+/)?.[0]?.split(' ')[0] : null
+                        });
+                        if (isVideoVerificationMessage && !hasShownVideoVerification) {
+                            newMessages.push({
+                                text: (
+                                    <div style={{ margin: '10px 0' }}>
+                                        <VideoVerificationCard link={videoVerificationLink} />
+                                    </div>
+                                ),
+                                isUserMessage: false
+                            });
+                            setHasShownVideoVerification(true); // Set flag to avoid showing multiple cards
+                        }
+                        return newMessages;
+                    });
+
+
+                    if (isTicketMessage) {
+                        console.log("Full Response:", fullResponse);
+
+                        // Extract the URL from 'https://' up to the first space
+                        const linkMatch = fullResponse.match(/https:\/\/\S+/);
+                        const link = linkMatch ? linkMatch[0].split(' ')[0] : '';
+
+                        // Extract assignedTo and ticketNo using the link or fullResponse
+                        const assignedToMatch = fullResponse.match(/https:\/\/([^\.\n]+)/);
+                        const ticketNoMatch = link.match(/([A-Z]+-\d+)/);
+
+                        console.log("Link:", link);
+                        console.log("Assigned To Match:", assignedToMatch);
+                        console.log("Ticket No Match:", ticketNoMatch);
+
+                        const assignedTo = assignedToMatch ? assignedToMatch[1].trim() : 'Unknown';
+                        const ticketNo = ticketNoMatch ? ticketNoMatch[1] : 'Unknown';
+
+                        // Get the current time
+                        const now = new Date();
+                        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + now.toLocaleDateString();
+
+                        console.log("Assigned To:", assignedTo);
+                        console.log("Ticket No:", ticketNo);
+                        console.log("time:", time);
+
+                        setMessages(prevMessages => [
+                            ...prevMessages,
+                            { text: '', showTicket: true, assignedTo, ticketNo, link, time }
+                        ]);
+                    }
+
+                    setShowOTP(isOTPMessage);
+                    await storeMessage(fullResponse, false);
+
+                } else {
+                    console.error('Unexpected API response structure:', response);
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                const errorMessage = "An error occurred while fetching the response.";
 
                 setMessages(prevMessages => {
                     const newMessages = prevMessages.slice(0, -1);
-                    newMessages.push({
-                        text: fullResponse,
-                        isUserMessage: false,
-                        showOptions: isOptionMessage,
-                        showOTP: isOTPMessage
-                    });
+                    newMessages.push({ text: errorMessage, isUserMessage: false });
                     return newMessages;
-
                 });
-                if (isTicketMessage) {
-                    console.log("Full Response:", fullResponse);
-
-                    // Extract the URL from 'https://' up to the first space
-                    const linkMatch = fullResponse.match(/https:\/\/\S+/);
-                    const link = linkMatch ? linkMatch[0].split(' ')[0] : '';
-
-                    // Extract assignedTo and ticketNo using the link or fullResponse
-                    const assignedToMatch = fullResponse.match(/https:\/\/([^\.\n]+)/);
-                    const ticketNoMatch = link.match(/([A-Z]+-\d+)/);
-
-                    console.log("Link:", link);
-                    console.log("Assigned To Match:", assignedToMatch);
-                    console.log("Ticket No Match:", ticketNoMatch);
-
-                    const assignedTo = assignedToMatch ? assignedToMatch[1].trim() : 'Unknown';
-                    const ticketNo = ticketNoMatch ? ticketNoMatch[1] : 'Unknown';
-
-                    // Get the current time
-                    const now = new Date();
-                    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + now.toLocaleDateString();
-
-                    console.log("Assigned To:", assignedTo);
-                    console.log("Ticket No:", ticketNo);
-                    console.log("time:", time);
-
-                    setMessages(prevMessages => [
-                        ...prevMessages,
-                        { text: '', showTicket: true, assignedTo, ticketNo, link, time }
-                    ]);
-                }
-
-
-
-
-                setShowOTP(isOTPMessage);
-                await storeMessage(fullResponse, false);
-
-            } else {
-                console.error('Unexpected API response structure:', response);
             }
-
-        } catch (error) {
-            console.error("Error:", error);
-            const errorMessage = "An error occurred while fetching the response.";
-
-            setMessages(prevMessages => {
-                const newMessages = prevMessages.slice(0, -1);
-                newMessages.push({ text: errorMessage, isUserMessage: false });
-                return newMessages;
-            });
-
-
-            await storeMessage(errorMessage, false);
         } finally {
             setIsLoading(false);
         }
     };
-
 
     const ChatInput = ({ onSend, isLoading, isOTPActive }) => {
         const [input, setInput] = useState('');
@@ -459,10 +567,6 @@ const Agent = () => {
             }
         };
 
-        const handleAttachFile = () => {
-            console.log('Attachment button clicked');
-            // Handle file attachment logic
-        };
 
         const handleKeyDown = (e) => {
             if (e.key === 'Enter') {
@@ -493,6 +597,16 @@ const Agent = () => {
     };
 
     const styles = {
+        videoVerificationCard: {
+            padding: '10px',
+            margin: '10px 0',
+            borderRadius: '8px',
+            backgroundColor: '#f0f0f0',
+            border: '1px solid #ddd',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+            width: '80%',  // Adjust the width as needed
+            maxWidth: '400px',  // Optional: to ensure the card does not exceed a certain width
+        },
         chatInputWrapper: {
             position: 'sticky',
             bottom: '0',
@@ -538,6 +652,18 @@ const Agent = () => {
             padding: '20px',
             backgroundColor: '#fff',
         }}>
+            {showFacialAuth && (
+                <BlurredOverlay>
+                    <CircularContainer>
+                        <FacialAuthComponent
+                            link={facialAuthLink}
+                            onClose={handleAuthClose}
+                            onComplete={handleAuthComplete}
+                        />
+                    </CircularContainer>
+                </BlurredOverlay>
+            )}
+
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -565,8 +691,6 @@ const Agent = () => {
                     >
                         {message.text}
                         {message.isLoading && message.typingEffect}
-
-
                         {message.showOptions && (
                             <div>
                                 {options.map((option) => (
@@ -580,18 +704,23 @@ const Agent = () => {
                         )}
                         {message.showOTP && (
                             <OTPInputCard
-                                otp={otp} // Pass otp state
-                                setOtp={setOtp} // Pass setOtp function
-                                onSubmitOTP={(displayText) => setMessages(prevMessages => [...prevMessages, { text: displayText, isUserMessage: true }])} // Update the message display with "Done!"
+                                otp={otp}
+                                setOtp={setOtp}
+                                onSubmitOTP={(displayText) => setMessages(prevMessages => [...prevMessages, { text: displayText, isUserMessage: true }])}
+                            />
+                        )}
+                        {message.showVideoVerification && !hasShownVideoVerification && (
+                            <VideoVerificationCard
+                                link={message.link}
+                                onVerificationComplete={handleAuthComplete}
                             />
                         )}
                         {message.showTicket && (
                             <TicketCard
                                 ticketNo={message.ticketNo}
                                 link={message.link}
-                                assignedTo={message.assignedTo} // Ensure this prop is included
-                                time={message.time}  // Use the dynamically generated time
-
+                                assignedTo={message.assignedTo}
+                                time={message.time}
                             />
                         )}
                     </div>
@@ -601,6 +730,7 @@ const Agent = () => {
             <ChatInput onSend={handleMessageSend} isLoading={isLoading} isOTPActive={showOTP} />
         </div>
     );
+
 };
 
 export default Agent;

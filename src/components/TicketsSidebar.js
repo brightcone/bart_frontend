@@ -9,14 +9,14 @@ const styles = {
         left: '300px', // Adjust based on your layout
         height: '100%',
         backgroundColor: '#fff',
-        boxShadow: '-4px 0 10px rgba(0,0,0,0.2)', // Enhanced shadow for card effect
-        borderRadius: '8px', // Rounded corners for card effect
+        boxShadow: '0 0 10px rgba(0,0,0,0.2)', // Shadow effect to cover space
+        borderRadius: '0', // Remove rounded corners for full-space effect
         overflowY: 'auto', // Ensure scrolling if content overflows
         zIndex: 1000, // Ensure it appears on top
-        borderRight: '3px solid #ddd', // Added right border for emphasis
+        borderRight: 'none', // Remove right border for full-space effect
     },
     sidebarOpen: {
-        width: '280px', // Adjust width as needed
+        width: 'calc(100% - 300px)', // Cover remaining space next to the existing sidebar
     },
     heading: {
         padding: '20px',
@@ -58,13 +58,25 @@ const TicketsSidebar = ({ isOpen }) => {
         >
             <h2 style={styles.heading}>Tickets</h2>
             <ul style={styles.list}>
-                <li style={styles.card}>
+                <li
+                    style={styles.card}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = styles.cardHover.backgroundColor}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = styles.card.backgroundColor}
+                >
                     <div style={styles.cardContent}>Ticket 1</div>
                 </li>
-                <li style={styles.card}>
+                <li
+                    style={styles.card}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = styles.cardHover.backgroundColor}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = styles.card.backgroundColor}
+                >
                     <div style={styles.cardContent}>Ticket 2</div>
                 </li>
-                <li style={styles.card}>
+                <li
+                    style={styles.card}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = styles.cardHover.backgroundColor}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = styles.card.backgroundColor}
+                >
                     <div style={styles.cardContent}>Ticket 3</div>
                 </li>
                 {/* Add more ticket items as needed */}

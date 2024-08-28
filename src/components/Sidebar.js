@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import profileImage from '../assets/image 44.svg';
 import trainLogo from '../assets/image 45.svg';
 import SearchSVG from '../assets/magnifying-glass.svg'; // Example SVGs
@@ -101,9 +101,10 @@ const styles = {
   },
 };
 
-
 const Sidebar = ({ toggleTemplates, toggleSearch, toggleHistory, toggleTickets }) => {
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [openSection, setOpenSection] = useState(null);
+  const location = useLocation();
 
   const handleMouseEnter = (item) => {
     setHoveredItem(item);
@@ -113,10 +114,52 @@ const Sidebar = ({ toggleTemplates, toggleSearch, toggleHistory, toggleTickets }
     setHoveredItem(null);
   };
 
+  const handleNavClick = (section) => {
+    if (openSection === section) {
+      setOpenSection(null);
+    } else {
+      setOpenSection(section);
+    }
+
+    switch (section) {
+      case 'templates':
+        toggleTemplates();
+        break;
+      case 'search':
+        toggleSearch();
+        break;
+      case 'history':
+        toggleHistory();
+        break;
+      case 'tickets':
+        toggleTickets();
+        break;
+      default:
+        // Close all open sections
+        if (openSection) {
+          switch (openSection) {
+            case 'templates':
+              toggleTemplates();
+              break;
+            case 'search':
+              toggleSearch();
+              break;
+            case 'history':
+              toggleHistory();
+              break;
+            case 'tickets':
+              toggleTickets();
+              break;
+          }
+          setOpenSection(null);
+        }
+    }
+  };
+
   return (
     <div style={styles.sidebar}>
       <div>
-        <NavLink to="/dashboard" style={{ textDecoration: 'none' }}>
+        <NavLink to="/dashboard" style={{ textDecoration: 'none' }} onClick={() => handleNavClick('profile')}>
           <div style={styles.profile}>
             <img
               src={trainLogo}
@@ -125,7 +168,6 @@ const Sidebar = ({ toggleTemplates, toggleSearch, toggleHistory, toggleTickets }
             />
             <div style={styles.profileText}>
               <h4 style={styles.profileHeading}>BARTGenie</h4>
-              {/* <p style={styles.profileParagraph}>Product Manager</p> */}
             </div>
           </div>
         </NavLink>
@@ -139,7 +181,7 @@ const Sidebar = ({ toggleTemplates, toggleSearch, toggleHistory, toggleTickets }
               onMouseEnter={() => handleMouseEnter('newChat')}
               onMouseLeave={handleMouseLeave}
             >
-              <NavLink to="/chat" style={styles.navLink}>
+              <NavLink to="/dashboard" style={styles.navLink} onClick={() => handleNavClick('newChat')}>
                 <span style={styles.text}>New Chat</span>
                 <img src={PlusSVG} alt="New Chat" style={styles.icon} />
               </NavLink>
@@ -152,7 +194,7 @@ const Sidebar = ({ toggleTemplates, toggleSearch, toggleHistory, toggleTickets }
               onMouseEnter={() => handleMouseEnter('search')}
               onMouseLeave={handleMouseLeave}
             >
-              <NavLink to="/search" style={styles.navLink} onClick={toggleSearch}>
+              <NavLink to="/search" style={styles.navLink} onClick={() => handleNavClick('search')}>
                 <span style={styles.text}>Search</span>
                 <img src={SearchSVG} alt="Search" style={styles.icon} />
               </NavLink>
@@ -165,7 +207,7 @@ const Sidebar = ({ toggleTemplates, toggleSearch, toggleHistory, toggleTickets }
               onMouseEnter={() => handleMouseEnter('templates')}
               onMouseLeave={handleMouseLeave}
             >
-              <NavLink to="#" style={styles.navLink} onClick={toggleTemplates}>
+              <NavLink to="#" style={styles.navLink} onClick={() => handleNavClick('templates')}>
                 <span style={styles.text}>Templates</span>
                 <img src={TemplatesSVG} alt="Templates" style={styles.icon} />
               </NavLink>
@@ -178,7 +220,7 @@ const Sidebar = ({ toggleTemplates, toggleSearch, toggleHistory, toggleTickets }
               onMouseEnter={() => handleMouseEnter('history')}
               onMouseLeave={handleMouseLeave}
             >
-              <NavLink to="/history" style={styles.navLink} onClick={toggleHistory}>
+              <NavLink to="/history" style={styles.navLink} onClick={() => handleNavClick('history')}>
                 <span style={styles.text}>History</span>
                 <img src={HistorySVG} alt="History" style={styles.icon} />
               </NavLink>
@@ -191,7 +233,7 @@ const Sidebar = ({ toggleTemplates, toggleSearch, toggleHistory, toggleTickets }
               onMouseEnter={() => handleMouseEnter('tickets')}
               onMouseLeave={handleMouseLeave}
             >
-              <NavLink to="/tickets" style={styles.navLink} onClick={toggleTickets}>
+              <NavLink to="/tickets" style={styles.navLink} onClick={() => handleNavClick('tickets')}>
                 <span style={styles.text}>Tickets</span>
                 <img src={TicketsSVG} alt="Tickets" style={styles.icon} />
               </NavLink>
@@ -208,7 +250,7 @@ const Sidebar = ({ toggleTemplates, toggleSearch, toggleHistory, toggleTickets }
           onMouseEnter={() => handleMouseEnter('settings')}
           onMouseLeave={handleMouseLeave}
         >
-          <NavLink to="#" style={styles.navLink}>
+          <NavLink to="#" style={styles.navLink} onClick={() => handleNavClick('settings')}>
             <span style={styles.text}>Settings</span>
             <img src={SettingsSVG} alt="Settings" style={styles.icon} />
           </NavLink>

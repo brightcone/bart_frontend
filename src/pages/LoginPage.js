@@ -52,13 +52,13 @@ const styles = {
         width: '100px',
         height: '100px',
         marginRight: '15px',
-        backgroundColor: 'rgba(255, 255, 255, 0.7)', 
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
         borderRadius: '50%',
         padding: '7px',
         objectFit: 'contain', // Ensures the entire image fits within the circle
     },
-    
-    
+
+
     profileText: {
         color: '#fff',
         fontSize: '45px',
@@ -247,24 +247,24 @@ const LoginPage = ({ setIsAuthenticated }) => {
             if (imageSrc) {
                 const base64Image = imageSrc.split(",")[1];
                 const binaryImage = Buffer.from(base64Image, 'base64');
-    
+
                 try {
                     const detectFacesParams = {
                         Image: { Bytes: binaryImage },
                         Attributes: ['ALL']
                     };
                     const detectFacesResult = await rekognition.detectFaces(detectFacesParams).promise();
-    
+
                     if (detectFacesResult.FaceDetails && detectFacesResult.FaceDetails.length > 0) {
                         const faceDetails = detectFacesResult.FaceDetails[0];
                         const currentAction = actionSequenceRef.current[0];
-    
+
                         if (currentAction === 'blink') {
                             handleBlinkDetection(faceDetails);
                         } else {
                             handleHeadMovement(faceDetails, currentAction);
                         }
-    
+
                         // Check if all actions are completed
                         if (actionSequenceRef.current.length === 0) {
                             // All actions completed, proceed with authentication
@@ -283,8 +283,8 @@ const LoginPage = ({ setIsAuthenticated }) => {
             }
         }
     };
-    
-    
+
+
 
     const handleBlinkDetection = (faceDetails) => {
         if (faceDetails.EyesOpen.Value === false) {
@@ -333,18 +333,18 @@ const LoginPage = ({ setIsAuthenticated }) => {
             };
             const allUsers = await s3.listObjectsV2(allUsersParams).promise();
             let faceMatchFound = false;
-    
+
             for (let item of allUsers.Contents) {
                 const photoKey = item.Key;
                 const photoData = await s3.getObject({ Bucket: 'face-authen', Key: photoKey }).promise();
-    
+
                 const compareFacesParams = {
                     SourceImage: { Bytes: binaryImage },
                     TargetImage: { Bytes: photoData.Body }
                 };
-    
+
                 const compareFacesResult = await rekognition.compareFaces(compareFacesParams).promise();
-    
+
                 // Ensure a high confidence score for the match
                 if (compareFacesResult.FaceMatches && compareFacesResult.FaceMatches.length > 0) {
                     const match = compareFacesResult.FaceMatches[0];
@@ -354,10 +354,12 @@ const LoginPage = ({ setIsAuthenticated }) => {
                     }
                 }
             }
-    
+
             if (faceMatchFound) {
                 setIsAuthenticated(true);
                 setLoginSuccess(true);
+                localStorage.setItem('username', email);
+                localStorage.setItem('password', password);
                 stopAnalysis();
                 setTimeout(() => {
                     navigate('/');
@@ -370,7 +372,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
             setError('Photo login failed. Please try again.');
         }
     };
-    
+
 
     const handleEmailPasswordLogin = async () => {
         setError('');
@@ -388,6 +390,8 @@ const LoginPage = ({ setIsAuthenticated }) => {
                     if (user.password === password) {
                         setIsAuthenticated(true);
                         setLoginSuccess(true);
+                        localStorage.setItem('username', email);
+                        localStorage.setItem('password', password);
                         setTimeout(() => {
                             navigate('/');
                         }, 1000);
@@ -408,7 +412,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
             console.error('Login Error:', err);
             setError('Login failed. Please try again.');
         }
-        
+
     };
 
     const handleSwitch = (type) => {
