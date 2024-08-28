@@ -182,7 +182,7 @@ const Dashboard = () => {
         />
       ),
       link: '/agent',
-      prompt: 'Please help me reset my email password.' // Use the appropriate prompt
+      prompt: 'Hey there, I need to reset my password' // Use the appropriate prompt
     },
 
     {
@@ -210,20 +210,20 @@ const Dashboard = () => {
         />
       ),
       link: '/agent',
-      prompt: 'Hi, I want to summarize a piece of text.' // Use the appropriate prompt
+      prompt: 'Hi, I want to summarize a text.' // Use the appropriate prompt
     },
     {
-      title: 'Install New Software',
-      description: 'Install software with guided instructions and ticket updates.',
+      title: 'Knowledge base',
+      description: 'Knowledge base answers retrieval.',
       icon: (
         <img
           src={InstallNewSoftwareSVG}
-          alt="Install New Software"
+          alt="Knowledgebasee"
           style={{ width: '30px', height: '30px', marginRight: '10px' }}
         />
       ),
       link: '/agent',
-      prompt: 'Please help me reset my project management tools password.' // Use the appropriate prompt
+      prompt: 'I want to ask a question from the knowledge base.' // Use the appropriate prompt
     },
 
     {
@@ -237,9 +237,8 @@ const Dashboard = () => {
         />
       ),
       link: '/agent',
-      prompt: 'Please help me to handle my hardware issues.' // Use the appropriate prompt
+      prompt: 'I have a question about managing my hardware.' // Use the appropriate prompt
     },
-
 
     {
       title: 'Raise a JIRA Ticket',

@@ -1,5 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import TemplateCard from '../components/TemplateCard'; // Reusing TemplateCard component from the Dashboard
+import PasswordResetSVG from '../assets/Frame 2147226995.svg';
+import RequestNewEquipmentSVG from '../assets/Frame 2147226995-1.svg';
+import ManageHardwareSVG from '../assets/Frame 2147226998.svg';
+import InstallNewSoftwareSVG from '../assets/Frame 2147226998-1.svg';
+import WiFiSetupSVG from '../assets/Frame 2147226995-2.svg';
+import ScheduleMaintenanceSVG from '../assets/Frame 2147226995-3.svg';
 
 const styles = {
     sidebar: {
@@ -7,98 +14,150 @@ const styles = {
         transition: 'width 0.3s',
         position: 'fixed',
         top: '0',
-        left: '300px', // Align it immediately next to the Sidebar
+        left: '300px', // Adjust if needed to align next to the existing sidebar
         height: '100%',
         backgroundColor: '#fff',
-        boxShadow: '-4px 0 10px rgba(0,0,0,0.2)', // Enhanced shadow for card effect
-        borderRadius: '8px', // Rounded corners for card effect
+        boxShadow: '0 0 10px rgba(0,0,0,0.2)', // Shadow effect to cover space
+        borderRadius: '0', // Remove rounded corners for full-space effect
         overflowY: 'auto', // Ensure scrolling if content overflows
         zIndex: 1000, // Ensure it appears on top
-        borderRight: '3px solid #ddd', // Added right border for emphasis
+        borderRight: 'none', // Remove right border for full-space effect
     },
     sidebarOpen: {
-        width: '300px',
-    },
-    heading: {
-        padding: '20px',
-        borderBottom: '2px solid #ddd', // Slightly thicker border for emphasis
-        fontSize: '18px',
-        fontWeight: 'bold',
-        color: '#333', // Darker color for better contrast
-    },
-    list: {
-        listStyle: 'none',
-        padding: '0',
-        margin: '0', // Remove default margin
-    },
-    card: {
-        backgroundColor: '#fff',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Card shadow effect
-        borderRadius: '8px', // Rounded corners for card effect
-        margin: '15px', // Spacing between cards
-        padding: '15px', // Padding inside the card
-        display: 'flex',
-        alignItems: 'flex-start',
-        transition: 'background-color 0.3s', // Smooth transition for hover effect
-        cursor: 'pointer',
-    },
-    cardHover: {
-        backgroundColor: '#f4f4f4', // Lighter background on hover
-    },
-    icon: {
+        width: 'calc(100% - 300px)',
+      },
+      heading: {
+        textAlign: 'center',
         fontSize: '24px',
-        marginRight: '15px',
-    },
-    text: {
-        textDecoration: 'none',
-        color: 'inherit',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    title: {
-        fontSize: '16px',
         fontWeight: 'bold',
-    },
-    description: {
-        fontSize: '14px',
-        color: '#666',
-    },
+        marginTop: '20px',
+        color: 'lightgray',
+        gridColumn: 'span 2', // Span across both columns
+        marginBottom: '20px', // Add margin to separate from grid items
+      },
+   templates: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '16px',
+    padding: '20px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: '0 auto',
+    maxWidth: '750px',
+  }
 };
 
 const templates = [
-    { title: 'WiFi Setup', description: 'Detect and fix WiFi issues with real-time support.', icon: '📡', link: '/wifi-setup' },
-    { title: 'Install New Software', description: 'Install software with guided instructions and ticket updates.', icon: '🖥️', link: '/install-new-software' },
-    { title: 'Schedule Maintenance', description: 'Schedule equipment maintenance effortlessly.', icon: '🛠️', link: '/schedule-maintenance' },
-    { title: 'Password Reset', description: 'Quickly reset your application passwords with ease.', icon: '🔒', link: '/password-reset' },
-    { title: 'Manage Hardware', description: 'Setup, maintain, and troubleshoot all your devices.', icon: '💻', link: '/manage-hardware' },
-    { title: 'Request New Equipment', description: 'Seamlessly request and track new equipment approvals.', icon: '📱', link: '/request-new-equipment' },
+    {
+      title: 'Password Reset',
+      description: 'Quickly reset your application passwords with ease.',
+      icon: (
+        <img
+          src={PasswordResetSVG}
+          alt="Password Reset"
+          style={{ width: '30px', height: '30px', marginRight: '10px' }}
+        />
+      ),
+      link: '/agent',
+      prompt: 'Hey there, I need to reset my password'
+    },
+    {
+      title: 'Draft and Send an email',
+      description: 'Drafting and Sending an emails.',
+      icon: (
+        <img
+          src={RequestNewEquipmentSVG}
+          alt="Draft and Send an email"
+          style={{ width: '30px', height: '30px', marginRight: '10px' }}
+        />
+      ),
+      link: '/agent',
+      prompt: 'Hi, I want to draft and send an email.'
+    },
+    {
+      title: 'Summarize Text',
+      description: 'Here you can summarize any context.',
+      icon: (
+        <img
+          src={ManageHardwareSVG}
+          alt="Summarize Text"
+          style={{ width: '30px', height: '30px', marginRight: '10px' }}
+        />
+      ),
+      link: '/agent',
+      prompt: 'Hi, I want to summarize a piece of text.'
+    },
+    {
+      title: 'Install New Software',
+      description: 'Install software with guided instructions and ticket updates.',
+      icon: (
+        <img
+          src={InstallNewSoftwareSVG}
+          alt="Install New Software"
+          style={{ width: '30px', height: '30px', marginRight: '10px' }}
+        />
+      ),
+      link: '/agent',
+      prompt: 'Please help me reset my project management tools password.'
+    },
+    {
+      title: 'Manage Hardware',
+      description: 'Setup, maintain, and troubleshoot all your devices.',
+      icon: (
+        <img
+          src={ManageHardwareSVG}
+          alt="Manage Hardware"
+          style={{ width: '30px', height: '30px', marginRight: '10px' }}
+        />
+      ),
+      link: '/agent',
+      prompt: 'Please help me to handle my hardware issues.'
+    },
+    {
+      title: 'Raise a JIRA Ticket',
+      description: 'Here you can raise any ticket.',
+      icon: (
+        <img
+          src={ScheduleMaintenanceSVG}
+          alt="Raise a JIRA Ticket"
+          style={{ width: '30px', height: '30px', marginRight: '10px' }}
+        />
+      ),
+      link: '/agent',
+      prompt: 'Hey, I need to raise a JIRA ticket.'
+    }
 ];
 
-const TemplatesSidebar = ({ isOpen }) => (
-    <div
-        style={{
-            ...styles.sidebar,
-            ...(isOpen ? styles.sidebarOpen : {}),
-        }}
-    >
-        <h2 style={styles.heading}>Templates</h2>
-        <ul style={styles.list}>
-            {templates.map((template, index) => (
-                <li
-                    key={index}
-                    style={styles.card}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = styles.cardHover.backgroundColor}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = styles.card.backgroundColor}
-                >
-                    <span style={styles.icon}>{template.icon}</span>
-                    <Link to={template.link} style={styles.text}>
-                        <div style={styles.title}>{template.title}</div>
-                        <div style={styles.description}>{template.description}</div>
-                    </Link>
-                </li>
-            ))}
-        </ul>
-    </div>
-);
+const TemplatesSidebar = ({ isOpen, onClose }) => {
+    const navigate = useNavigate();
+  
+    const handleClick = (link, prompt) => {
+      navigate(link, { state: { initialPrompt: prompt } });
+      onClose(); // Close the sidebar when navigating
+    };
+
+    return (
+        <div
+            style={{
+                ...styles.sidebar,
+                ...(isOpen ? styles.sidebarOpen : {}),
+            }}
+        >
+
+<div style={styles.templates}>
+        <h2 style={styles.heading}>Suggested Templates</h2>
+        {templates.map((template, index) => (
+          <TemplateCard
+            key={index}
+            title={template.title}
+            description={template.description}
+            icon={template.icon}
+            onClick={() => handleClick(template.link, template.prompt)}
+          />
+        ))}
+      </div>
+        </div>
+    );
+};
 
 export default TemplatesSidebar;
