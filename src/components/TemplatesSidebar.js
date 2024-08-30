@@ -72,7 +72,7 @@ const templates = [
         />
       ),
       link: '/agent',
-      prompt: 'Hi, I want to draft and send an email.'
+      prompt: 'Hi, I want to draft an email.'
     },
     {
       title: 'Summarize Text',
