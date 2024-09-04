@@ -1,306 +1,506 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import TemplateCard from '../components/TemplateCard';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
-import PasswordResetSVG from '../assets/Frame 2147226995.svg';
-import RequestNewEquipmentSVG from '../assets/Frame 2147226995-1.svg';
-import ManageHardwareSVG from '../assets/Frame 2147226998.svg';
-import InstallNewSoftwareSVG from '../assets/Frame 2147226998-1.svg';
-import WiFiSetupSVG from '../assets/Frame 2147226995-2.svg';
-import ScheduleMaintenanceSVG from '../assets/Frame 2147226995-3.svg';
-import PlusSVG from '../assets/plus.svg';
-import SendSVG from '../assets/arrow-up-right.svg';
-
-const styles = {
-  container: {
-    position: 'relative',
-    minHeight: '100vh',
-    paddingLeft: '250px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between', // To align items between header and footer
-  },
-  dashboard: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center', // Align items to the center
-    width: '100%',
-    padding: '0px 20px 20px 0px',
-    transition: 'filter 0.7s ease',
-    zIndex: 1,
-  },
-  heading: {
-    textAlign: 'center',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    marginTop: '20px',
-    color: 'lightgray',
-    gridColumn: 'span 2', // Span across both columns
-    marginBottom: '20px', // Add margin to separate from grid items
-  },
-  userIcon: {
-    position: 'absolute',
-    top: '20px',
-    right: '20px',
-    fontSize: '24px',
-    cursor: 'pointer',
-  },
-  profileCard: {
-    position: 'absolute',
-    top: '60px',
-    right: '20px',
-    width: '200px',
-    padding: '15px',
-    backgroundColor: '#fff',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    borderRadius: '10px',
-    zIndex: 2,
-  },
-  logoutButton: {
-    backgroundColor: 'gray',
-    color: 'black',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    width: '100%',
-    textAlign: 'center',
-  },
-  templates: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '16px',
-    maxWidth: '750px',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: '20px',
-  },
-  chatInputContainer: {
-    width: 'calc(100% - 50px)', // Extend to the left and right ends
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '5px',
-    backgroundColor: '#fff',
-  },
-  chatInputWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: '850px',
-    borderRadius: '30px',
-    padding: '8px 15px',
-    backgroundColor: '#f8f8f8',
-  },
-  chatInput: {
-    flex: 1,
-    border: 'none',
-    outline: 'none',
-    padding: '10px',
-    borderRadius: '30px',
-    fontSize: '16px',
-    backgroundColor: 'transparent',
-  },
-  chatButton: {
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    marginLeft: '10px',
-  },
-  icon: {
-    width: '24px', // Adjust size of the icon
-    height: '24px',
-  },
-  PasswordResetSVG: {
-    width: '40px',
-    height: '40px',
-    marginRight: '10px',
-  },
-  RequestNewEquipmentSVG: {
-    width: '40px',
-    height: '40px',
-    marginRight: '10px',
-  },
-  ManageHardwareSVG: {
-    width: '40px',
-    height: '40px',
-    marginRight: '10px',
-  },
-  InstallNewSoftwareSVG: {
-    width: '40px',
-    height: '40px',
-    marginRight: '10px',
-  },
-  WiFiSetupSVG: {
-    width: '40px',
-    height: '40px',
-    marginRight: '10px',
-  },
-  ScheduleMaintenanceSVG: {
-    width: '40px',
-    height: '40px',
-    marginRight: '10px',
-  },
-};
+import Icon7 from '../assets/plus-circle.svg';
+import Icon8 from '../assets/arrow-circle-up.svg';
+import Icon10 from '../assets/house.svg';
+import Icon11 from '../assets/plus.svg';
+import Icon12 from '../assets/magnifying-glass.svg';
+import Icon13 from '../assets/circles-four.svg';
+import Icon14 from '../assets/clock-counter-clockwise.svg';
+import Icon15 from '../assets/sticker.svg';
+import Icon16 from '../assets/gear-six.svg';
+import Icon17 from '../assets/profile.svg';
+import Icon18 from '../assets/image 45.svg';
+import LessThanIcon from '../assets/less-than.svg'; // Import your less than icon
+import GreaterThanIcon from '../assets/greater-than.svg'; // Import your greater than icon
+import { SuggestedTemplate } from './SuggestedTemplates';
+import { Route, Router, Routes } from 'react-router-dom';
+import Agent from './Agent';
 
 const Dashboard = () => {
-  const [message, setMessage] = useState('');
-  const [isProfileCardVisible, setProfileCardVisible] = useState(false);
-  const navigate = useNavigate();
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      console.log('Sending message:', message);
-      setMessage('');
-    }
-  };
+    const toggleSidebar = () => {
+        setIsCollapsed(!isCollapsed);
+    };
 
-  const handleAttachFile = () => {
-    console.log('Attachment button clicked');
-    // Handle file attachment logic
-  };
-  const handleProfileIconClick = () => {
-    setProfileCardVisible(!isProfileCardVisible);
-  };
+    return (
+        <div className="dashboard">
+            <style>
+                {`
+                    .dashboard {
+                        display: flex;
+                        height: 100vh;
+                        background-color: #000000;
 
-  const handleLogout = () => {
-    console.log('Logging out...');
-    navigate('/login'); // Redirect to the login page
-    window.location.reload(); // Ensures all state is reset, and sidebar is not shown
-  };
+                    }
+                    .sidebar {
+                    width: 240px;
+                    background-color: #111;
+                    padding: 20px;
+                    color: white;
+                    border-right: 2px solid #ebebeb;
+                    transition: width 0.3s; /* Smooth transition */
+                    position: relative; /* Ensure this is relative to position children absolutely */
+                    }
+                    .sidebar.collapsed {
+                        width: 60px; /* Width when collapsed */
+                    }
+                    .toggle-btn {
+                        position: absolute;
+                        top: 20px; /* Adjust as needed */
+                        right: 20px; /* Adjust as needed */
+                        background: none;
+                        border: none;
+                        color: white;
+                        font-size: 24px;
+                        cursor: pointer;
+                        margin-bottom: 10px; /* Space between button and content */
+                        display: flex;
+                        align-items: center;
+                    }
+                    .profile {
+                        text-align: center;
+                    }
+                    .profile img {
+                        border-radius: 50%;
+                        width: 50px;
+                        height: 50px;
+                        display: block;
+                        margin: 0 auto;
+                    }
+                    .profile-name, .profile-role {
+                        display: block; /* Make profile name and role block-level for proper spacing */
+                    }
+                    .profile-role {
+                        margin-top: 5px; /* Space between name and role */
+                        color: #888; /* Optional: Adjust color for the role */
+                    }
+                    .nav ul {
+                        list-style-type: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    .nav li {
+                        margin: 10px 0; /* Space between items */
+                        font-size: 16px;
+                        cursor: pointer;
+                        padding: 20px 20px; /* Add padding inside the box */
+                        border-radius: 20px; /* Rounded corners */
+                        background-color: #222; /* Background color of the box */
+                        color: white; /* Text color */
+                        display: flex; /* Align items horizontally */
+                        align-items: center; /* Center items vertically */
+                    }
+                    .nav li:hover {
+                        background-color: #b5b3b3; /* Darker background on hover */
+                    }
+                    .nav li img {
+                        margin-right: 10px; /* Space between icon and text */
+                        width: 24px; /* Adjust size as needed */
+                        height: 24px; /* Adjust size as needed */
+                    }
+                    .nav-text {
+                        display: inline; /* Show text when sidebar is expanded */
+                    }
+                    .sidebar.collapsed .nav-text {
+                        display: none; /* Hide text when sidebar is collapsed */
+                    }
+                    .sidebar.collapsed .footerdiv div {
+                        display: none; /* Hide text when sidebar is collapsed */
+                    }
+                    .footer {
+                        position: absolute;
+                        bottom: 0;
+                        width: 100%; /* Ensure the footer takes the full width of the sidebar */
+                        max-width: 240px; /* Max width when the sidebar is expanded */
+                        padding: 5px;
+                        background-color: grey; /* Match sidebar background color */
+                        display: flex;
+                        justify-content: center;
+                        border-radius: 20px;
+                        box-sizing: border-box; /* Ensure padding is included in the width calculation */
+                        overflow: hidden; /* Prevent any content overflow */
+                    }
+                    .sidebar.collapsed .footer {
+                        max-width: 60px; /* Adjust width to match the collapsed sidebar */
+                    }
 
-  const templates = [
-    {
-      title: 'Password Reset',
-      description: 'Quickly reset your application passwords with ease.',
-      icon: (
-        <img
-          src={PasswordResetSVG}
-          alt="Password Reset"
-          style={{ width: '30px', height: '30px', marginRight: '10px' }}
-        />
-      ),
-      link: '/agent',
-      prompt: 'Please help me reset my email password.' // Use the appropriate prompt
-    },
 
-    {
-      title: 'Draft and Send an email ',
-      description: 'Drafting and Sending an emails.',
-      icon: (
-        <img
-          src={RequestNewEquipmentSVG}
-          alt="Draft and Send an email"
-          style={{ width: '30px', height: '30px', marginRight: '10px' }}
-        />
-      ),
-      link: '/agent',
-      prompt: 'Hi, I want to draft and send an email.' // Use the appropriate prompt
-    },
+                    .footerdiv {
+                        display: flex;
+                        align-items: center; /* Center the image and text vertically */
+                        width: 100%;
+                    }
 
-    {
-      title: 'Summarize Text',
-      description: 'Here you can summarize any context.',
-      icon: (
-        <img
-          src={ManageHardwareSVG}
-          alt="Summarize Text"
-          style={{ width: '30px', height: '30px', marginRight: '10px' }}
-        />
-      ),
-      link: '/agent',
-      prompt: 'Hi, I want to summarize a piece of text.' // Use the appropriate prompt
-    },
-    {
-      title: 'Install New Software',
-      description: 'Install software with guided instructions and ticket updates.',
-      icon: (
-        <img
-          src={InstallNewSoftwareSVG}
-          alt="Install New Software"
-          style={{ width: '30px', height: '30px', marginRight: '10px' }}
-        />
-      ),
-      link: '/agent',
-      prompt: 'Please help me reset my project management tools password.' // Use the appropriate prompt
-    },
+                    .footerdiv img {
+                        width: 50px; /* Maintain aspect ratio */
+                        height: 50px; /* Adjust the height to align with the text */
+                        margin-right: 10px; /* Space between image and text */
+                    }
 
-    {
-      title: 'Manage Hardware',
-      description: 'Setup, maintain, and troubleshoot all your devices.',
-      icon: (
-        <img
-          src={ManageHardwareSVG}
-          alt="Manage Hardware"
-          style={{ width: '30px', height: '30px', marginRight: '10px' }}
-        />
-      ),
-      link: '/agent',
-      prompt: 'Please help me to handle my hardware issues.' // Use the appropriate prompt
-    },
+                    .footerdiv div {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center; /* Center the text vertically relative to the image */
+                    }
+                    .footerdiv p {
+                        margin: 0; /* Remove default paragraph margins */
+                        color: white;
+                        text-align: left; /* Align text to the left */
+                        white-space: nowrap; /* Prevent text from wrapping to a new line */
+                        overflow: hidden; /* Hide any overflow if the text is too long */
+                        text-overflow: ellipsis; /* Add ellipsis if the text overflows */
+                    }
+                    .content {
+                        flex: 1;
+                        background: linear-gradient(to right, #000000 0%, #171852 100%);
+                        padding: 40px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        border-radius: 30px; 
+                    }
+                    .suggested-templates {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr); /* Adjust the number 3 to how many columns you want */
+                        gap: 15px;
+                        justify-content: center; /* Center the grid horizontally */
+                        align-items: center; /* Center the grid vertically */
+                        margin: 0 auto; /* Center the grid horizontally with auto margins */
+                        padding: 50px 350px; /* Add padding to space it vertically from other elements */
+                        color:white;
+                    }
+                    .templates-header {
+                        text-align: center; /* Center the text horizontally */
+                        font-size: 24px; /* Adjust font size as needed */
+                        color: white; /* Adjust color as needed */
+                        margin-bottom: 0px; /* Add spacing between header and grid */
+                        margin-top:200px;                 
+                    }
+                    .template {
+                        background-color: #262626;
+                        padding: 20px;
+                        border-radius: 20px;
+                        color: white;
+                        text-align: center;
+                    }
+                    .suggested-templates > .template {
+                        background-color: #1F1F1F;
+                        border-radius: 16px;
+                        padding: 20px;
+                        text-align: center;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        color: white;
+                    }
+                    .chat {
+                        display: flex;
+                        justify-content: space-between;
+                        background-color: #262626;
+                        padding: 15px;
+                        border-radius: 50px;
+                    }
+                    .chat input {
+                        flex: 1;
+                        border: none;
+                        background: none;
+                        color: white;
+                        font-size: 16px;
+                        padding: 10px;
+                    }
+                    .chat button {
+                        background-color: #444;
+                        color: white;
+                        border: none;
+                        padding: 10px 15px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                    }
+                    .icon{
+                        border-radius: 50%;
+                        background-color: #444; /* Background color */
+                        border: none; /* Remove default border */
+                        padding: 10px; /* Adjust padding */
+                        cursor: pointer;
+                        width: 50px; /* Set the width and height to create a perfect circle */
+                        height: 50px;
+                        display: flex; /* Align icon in the center */
+                        align-items: center;
+                        justify-content: center;
+                        width: 30px; /* Adjust size as needed */
+                        height: 30px; /* Adjust size as needed */
+                    }
+                `}
+            </style>
+            <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+                <button className="toggle-btn" onClick={toggleSidebar}>
+                    <img src={isCollapsed ? GreaterThanIcon : LessThanIcon} alt="Toggle Icon" />
+                </button>
+                <div className="profile">
+                    <img src={Icon17} alt="Profile" />
+                    <span className="profile-name">Floyd Miles</span>
+                    <small className="profile-role">Product Manager</small>
+                </div>
+                <nav className="nav">
+                    <ul>
+                        <li><img src={Icon10} alt="Icon 10" className="template-icon" /><span className="nav-text">Home</span></li>
+                        <li><img src={Icon11} alt="Icon 11" className="template-icon" /><span className="nav-text">New chat</span></li>
+                        <li><img src={Icon12} alt="Icon 12" className="template-icon" /><span className="nav-text">Search</span></li>
+                        <li><img src={Icon13} alt="Icon 13" className="template-icon" /><span className="nav-text">Templates</span></li>
+                        <li><img src={Icon14} alt="Icon 14" className="template-icon" /><span className="nav-text">History</span></li>
+                        <li><img src={Icon15} alt="Icon 15" className="template-icon" /><span className="nav-text">Tickets</span></li>
+                        <li><img src={Icon16} alt="Icon 16" className="template-icon" /><span className="nav-text">Settings</span></li>
+                    </ul>
+                </nav>
+                <footer className='footer'>
+                    <div className='footerdiv'>
+                        <img src={Icon18} alt="BART Logo" />
+                        <div>
+                            <p><strong>BART</strong></p>
+                            <p>Bay Area Rapid Transit</p>
+                        </div>
+                    </div>
+                </footer>
 
+            </aside>
+            <main className="content">
 
-    {
-      title: 'Raise a JIRA Ticket',
-      description: 'Here you can raise any ticket.',
-      icon: (
-        <img
-          src={ScheduleMaintenanceSVG}
-          alt="Raise a JIRA Ticket"
-          style={{ width: '30px', height: '30px', marginRight: '10px' }}
-        />
-      ),
-      link: '/agent',
-      prompt: 'Hey, I need to raise a JIRA ticket.' // Leave empty if not needed
-    }
-  ];
-
-  return (
-    <div style={styles.container}>
-      <div style={styles.dashboard}>
-        <FontAwesomeIcon
-          icon={faUser}
-          style={styles.userIcon}
-          onClick={handleProfileIconClick}
-        />
-        {isProfileCardVisible && (
-          <div style={styles.profileCard}>
-            <button style={styles.logoutButton} onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-        )}
-        <h2 style={styles.heading}>Suggested Templates</h2>
-        <div style={styles.templates}>
-          {templates.map((template, index) => (
-            <TemplateCard
-              key={index}
-              {...template}
-              onClick={() => navigate(template.link, { state: { initialPrompt: template.prompt } })}
-            />
-          ))}
+                <Agent></Agent>
+                <div className="chat">
+                    <img src={Icon7} alt="Icon 7" className="template-icon" />
+                    <input type="text" placeholder="Ask BART Genie" />
+                    <button className='icon'><img src={Icon8} alt="Icon 8" className="template-icon" /></button>
+                </div>
+            </main>
         </div>
-      </div>
-      <div style={styles.chatInputContainer}>
-        <div style={styles.chatInputWrapper}>
-          <button style={styles.chatButton} onClick={handleAttachFile}>
-            <img src={PlusSVG} alt="Attach File" style={styles.icon} />
-          </button>
-          <input
-            type="text"
-            placeholder="Type your message..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            style={styles.chatInput}
-          />
-          <button style={styles.chatButton} onClick={handleSendMessage}>
-            <img src={SendSVG} alt="Send Message" style={styles.icon} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+    );
+}
 
 export default Dashboard;
+
+
+
+// import React, { useState } from 'react';
+// import Icon1 from '../assets/password.svg';
+// import Icon2 from '../assets/laptop-1.svg';
+// import Icon3 from '../assets/laptop.svg';
+// import Icon4 from '../assets/computer-settings.svg';
+// import Icon5 from '../assets/wifi.svg';
+// import Icon6 from '../assets/cleaning-brush.svg';
+// import Icon7 from '../assets/plus-circle.svg';
+// import Icon8 from '../assets/arrow-up-right.svg';
+// import Icon9 from '../assets/lightning.svg';
+// import Icon10 from '../assets/house.svg';
+// import Icon11 from '../assets/plus.svg';
+// import Icon12 from '../assets/magnifying-glass.svg';
+// import Icon13 from '../assets/circles-four.svg';
+// import Icon14 from '../assets/clock-counter-clockwise.svg';
+// import Icon15 from '../assets/sticker.svg';
+// import Icon16 from '../assets/gear-six.svg';
+
+// const Dashboard = () => {
+//     const [isCollapsed, setIsCollapsed] = useState(false);
+
+//     const toggleSidebar = () => {
+//         setIsCollapsed(!isCollapsed);
+//     };
+
+//     return (
+//         <div className="dashboard">
+//             <style>
+//                 {`
+//                     .dashboard {
+//                         display: flex;
+//                         height: 100vh;
+//                     }
+//                     .sidebar {
+//                         width: 240px;
+//                         background-color: #111;
+//                         padding: 20px;
+//                         color: white;
+//                         border-right: 2px solid #ebebeb;
+//                         transition: width 0.3s; /* Smooth transition */
+//                     }
+//                     .sidebar.collapsed {
+//                         width: 60px; /* Width when collapsed */
+//                     }
+//                     .toggle-btn {
+//                         background: none;
+//                         border: none;
+//                         color: white;
+//                         font-size: 24px;
+//                         cursor: pointer;
+//                         margin-bottom: 10px; 
+//                     }
+//                     .profile {
+//                         text-align: center;
+//                     }
+//                     .profile img {
+//                         border-radius: 50%;
+//                         width: 80px;
+//                         height: 80px;
+//                         display: block;
+//                         margin: 0 auto;
+//                     }
+//                     .profile-name, .profile-role {
+//                         display: block;
+//                     }
+//                     .profile-role {
+//                         margin-top: 5px; /* Space between name and role */
+//                         color: #888; /* Optional: Adjust color for the role */
+//                     }
+//                     .nav ul {
+//                         list-style-type: none;
+//                         padding: 0;
+//                         margin: 0;
+//                     }
+//                     .nav li {
+//                         margin: 10px 0; /* Space between items */
+//                         font-size: 16px;
+//                         cursor: pointer;
+//                         padding: 20px 20px; /* Add padding inside the box */
+//                         border-radius: 20px; /* Rounded corners */
+//                         background-color: #222; /* Background color of the box */
+//                         color: white; /* Text color */
+//                         display: flex; /* Align items horizontally */
+//                         align-items: center; /* Center items vertically */
+                        
+//                     }
+//                      .nav li:hover {
+//                     background-color: #b5b3b3; /* Darker background on hover */
+//                     }
+//                     .nav li img {
+//                         margin-right: 10px; /* Space between icon and text */
+//                         width: 24px; /* Adjust size as needed */
+//                         height: 24px; /* Adjust size as needed */
+//                     }
+//                     .nav-text {
+//                         display: inline; /* Show text when sidebar is expanded */
+//                     }
+//                     .sidebar.collapsed .nav-text {
+//                         display: none; /* Hide text when sidebar is collapsed */
+//                     }
+//                     .content {
+//                         flex: 1;
+//                         background: linear-gradient(to right, #000000 0%, #1f2270 100%);
+//                         padding: 40px;
+//                         display: flex;
+//                         flex-direction: column;
+//                         justify-content: space-between;
+//                     }
+//                     .suggested-templates {
+//                         display: grid;
+//                         grid-template-columns: repeat(3, 1fr); /* Adjust the number 3 to how many columns you want */
+//                         gap: 15px;
+//                         justify-content: center; /* Center the grid horizontally */
+//                         align-items: center; /* Center the grid vertically */
+//                         margin: 0 auto; /* Center the grid horizontally with auto margins */
+//                         padding: 50px 350px; /* Add padding to space it vertically from other elements */
+//                         color:white;
+//                     }
+//                     .templates-header {
+//                         text-align: center; /* Center the text horizontally */
+//                         font-size: 24px; /* Adjust font size as needed */
+//                         color: white; /* Adjust color as needed */
+//                         margin-bottom: 0px; /* Add spacing between header and grid */
+//                         margin-top:200px;                 
+//                     }
+//                     .template {
+//                         background-color: #262626;
+//                         padding: 20px;
+//                         border-radius: 20px;
+//                         color: white;
+//                         text-align: center;
+//                     }
+//                     .suggested-templates > .template {
+//                         background-color: #1F1F1F;
+//                         border-radius: 16px;
+//                         padding: 20px;
+//                         text-align: center;
+//                         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+//                         color: white;
+//                     }
+//                     .chat {
+//                         display: flex;
+//                         justify-content: space-between;
+//                         background-color: #262626;
+//                         padding: 15px;
+//                         border-radius: 50px;
+//                     }
+//                     .chat input {
+//                         flex: 1;
+//                         border: none;
+//                         background: none;
+//                         color: white;
+//                         font-size: 16px;
+//                         padding: 10px;
+//                     }
+//                     .chat button {
+//                         background-color: #444;
+//                         color: white;
+//                         border: none;
+//                         padding: 10px 15px;
+//                         border-radius: 8px;
+//                         cursor: pointer;
+//                     }
+//                 `}
+//             </style>
+//             <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+//                 <button className="toggle-btn" onClick={toggleSidebar}>&#60;</button>
+//                 <div className="profile">
+//                     <img src="profile-pic-url" alt="Profile" />
+//                     <span className="profile-name">Floyd Miles</span>
+//                     <small className="profile-role">Product Manager</small>
+//                 </div>
+//                 <nav className="nav">
+//                     <ul>
+//                         <li><img src={Icon10} alt="Icon 10" className="template-icon" /><span className="nav-text">Home</span></li>
+//                         <li><img src={Icon11} alt="Icon 11" className="template-icon" /><span className="nav-text">New chat</span></li>
+//                         <li><img src={Icon12} alt="Icon 12" className="template-icon" /><span className="nav-text">Search</span></li>
+//                         <li><img src={Icon13} alt="Icon 13" className="template-icon" /><span className="nav-text">Templates</span></li>
+//                         <li><img src={Icon14} alt="Icon 14" className="template-icon" /><span className="nav-text">History</span></li>
+//                         <li><img src={Icon15} alt="Icon 15" className="template-icon" /><span className="nav-text">Tickets</span></li>
+//                         <li><img src={Icon16} alt="Icon 16" className="template-icon" /><span className="nav-text">Settings</span></li>
+//                     </ul>
+//                 </nav>
+//             </aside>
+//             <main className="content">
+//                 <div>
+//                     <p className="templates-header"><img src={Icon9} alt="Icon 9" className="template-icon" />Suggested Templates</p> {/* Position this paragraph outside the grid container */}
+//                     <div className="suggested-templates">
+//                         <div className="template">
+//                             <img src={Icon1} alt="Icon 1" className="template-icon" />
+//                             <p>Reset your application passwords with ease.</p>
+//                         </div>
+//                         <div className="template">
+//                             <img src={Icon2} alt="Icon 2" className="template-icon" />
+//                             <p>Seamlessly request and track new equipment approvals.</p>
+//                         </div>
+//                         <div className="template">
+//                             <img src={Icon3} alt="Icon 3" className="template-icon" />
+//                             <p>Setup, maintain, and troubleshoot all your devices.</p>
+//                         </div>
+//                         <div className="template">
+//                             <img src={Icon4} alt="Icon 4" className="template-icon" />
+//                             <p>Install software with guided instructions and ticket updates.</p>
+//                         </div>
+//                         <div className="template">
+//                             <img src={Icon5} alt="Icon 5" className="template-icon" />
+//                             <p>Detect and fix WiFi issues with real-time support.</p>
+//                         </div>
+//                         <div className="template">
+//                             <img src={Icon6} alt="Icon 6" className="template-icon" />
+//                             <p>Schedule equipment maintenance effortlessly.</p>
+//                         </div>
+//                     </div>
+//                 </div>
+//                 <div className="chat">
+//                     <img src={Icon7} alt="Icon 7" className="template-icon" />
+//                     <input type="text" placeholder="Ask BART Genie" />
+//                     <button><img src={Icon8} alt="Icon 8" className="template-icon" /></button>
+//                 </div>
+//             </main>
+//         </div>
+//     );
+// }
+
+// export default Dashboard;
