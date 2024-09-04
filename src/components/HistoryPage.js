@@ -6,7 +6,7 @@ import timezone from 'dayjs/plugin/timezone';
 import { BedrockAgentRuntimeClient, InvokeAgentCommand } from "@aws-sdk/client-bedrock-agent-runtime";
 import { v4 as uuidv4 } from 'uuid';
 import ChatInput from './ChatInput';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Email, Visibility, VisibilityOff } from '@mui/icons-material';
 import styled, { keyframes } from 'styled-components';
 
 dayjs.extend(utc);
@@ -35,7 +35,7 @@ const HistoryPage = () => {
             }
 
             const response = await axios.get(
-                `https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat?username=${username}&password=${password}`
+                `https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat?email=${username}&password=${password}`
             );
 
             const parsedData = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
@@ -150,7 +150,7 @@ const HistoryPage = () => {
             // Store the message in the database
             await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
                 action: 'store',
-                username: username,
+                email: username,
                 password: password,
                 sessionId: sessionId,
                 message: input,
@@ -192,7 +192,9 @@ const HistoryPage = () => {
 
         const command = new InvokeAgentCommand({
             agentId: "U3YHVQFHVA",
-            agentAliasId: "5OMM0I4NH3",
+            agentAliasId: "GX5MSL1QQU",
+            // agentId: "R3DWZWXULB",
+            // agentAliasId: "SPVPOKBWEM",
             sessionId: sessionId,
             inputText: input
         });
@@ -226,7 +228,7 @@ const HistoryPage = () => {
                     // Store the agent's response in the database
                     await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
                         action: 'store',
-                        username: localStorage.getItem('username'),
+                        email: localStorage.getItem('username'),
                         password: localStorage.getItem('password'),
                         sessionId: sessionId,
                         message: fullResponse,
@@ -264,7 +266,7 @@ const HistoryPage = () => {
             // Store the error message in the database
             await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
                 action: 'store',
-                username: localStorage.getItem('username'),
+                email: localStorage.getItem('username'),
                 password: localStorage.getItem('password'),
                 sessionId: sessionId,
                 message: errorMessage,

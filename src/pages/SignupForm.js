@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AWS from 'aws-sdk';
 import Webcam from 'react-webcam';
+// import trainLogo from '../assets/image 45.svg';
 import backgroundImage from '../assets/sparkles.svg'; // Updated to use sparkles.svg
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; // Import eye icons

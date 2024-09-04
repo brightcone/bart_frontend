@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactMarkdown from "react-markdown";
-import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { BedrockAgentRuntimeClient, InvokeAgentCommand } from "@aws-sdk/client-bedrock-agent-runtime";
 import { v4 as uuidv4 } from 'uuid';
@@ -9,9 +7,7 @@ import { IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import styled, { keyframes } from 'styled-components';
 import FacialAuthComponent from '../components/FacialAuthComponent';
-import logo from "../assets/Genie.svg";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+
 const BlurredOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -54,7 +50,7 @@ const ClearCircle = styled.div`
   height: 100%;
   border-radius: 50%;
   overflow: hidden;
-  filter: brightness(2.0) contrast(1.1); /* Increase brightness and contrast */
+  filter: brightness(1.7) contrast(1.1); /* Increase brightness and contrast */
 `;
 const Agent = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -66,13 +62,15 @@ const Agent = () => {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [isMasked, setIsMasked] = useState(true);
     const [showOTP, setShowOTP] = useState(false);
-    const [otpKey, setOtpKey] = useState(0);
     const [videoVerificationShown, setVideoVerificationShown] = useState(false);
     const [showFacialAuth, setShowFacialAuth] = useState(false);
     const [facialAuthLink, setFacialAuthLink] = useState('');
     const [hasShownVideoVerification, setHasShownVideoVerification] = useState(false);
     const [isVerificationCompleted, setIsVerificationCompleted] = useState(false);
     const [hasSentVerificationMessage, setHasSentVerificationMessage] = useState(false);
+    // Add this state at the top of your component
+    const [initialPromptProcessed, setInitialPromptProcessed] = useState(false);
+
     const options = [
         { id: 1, text: 'Email' },
         { id: 2, text: 'Employee Portal' },
@@ -89,10 +87,11 @@ const Agent = () => {
 
     useEffect(() => {
         if (sessionId && !hasSentInitialMessage.current) {
-            handleMessageSend(initialPrompt);
+            handleMessageSend(initialPrompt, false); // Send the initial prompt without displaying it
             hasSentInitialMessage.current = true;
         }
     }, [sessionId, initialPrompt]);
+
 
     useEffect(() => {
         endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -145,6 +144,13 @@ const Agent = () => {
             <span>&rarr;</span>
         </div>
     );
+    const startNewSession = () => {
+        // Reset the initial prompt flag
+        setInitialPromptProcessed(false);
+
+        // Additional logic to start a new session
+    };
+
 
     const OTPInputCard = ({ onSubmitOTP, otp, setOtp }) => {
         const inputRefs = useRef([]);
@@ -177,9 +183,7 @@ const Agent = () => {
         };
 
         const handleSubmit = () => {
-            const otpValue = otp.join('');
-            onSubmitOTP(otpValue);
-            setShowOTP(false); // Hide OTP card after submission
+            handleMessageSend(otp.join(''), true);
         };
 
         const handleKeyDown = (index, e) => {
@@ -196,6 +200,7 @@ const Agent = () => {
                 alignItems: 'flex-start',
                 marginBottom: '10px',
                 padding: '20px',
+                //backgroundColor: '#f8f8f8',
                 borderRadius: '8px',
                 //boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                 width: '100%',
@@ -290,6 +295,7 @@ const Agent = () => {
                 fontSize: '16px',
                 border: '1px solid #001f3f',
                 color: '#fff',
+                backgroundColor: '#001f3f',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s, box-shadow 0.3s',
             }}
@@ -435,21 +441,69 @@ const Agent = () => {
         </div>
     );
 
-    const handleMessageSend = async (input, actualOTP = null) => {
+    const handleMessageSend = async (input, displayMessage = true, actualOTP = null) => {
+        if (!displayMessage) {
+            // Skip if the initial prompt has already been processed
+            if (initialPromptProcessed) {
+                return;
+            }
+
+            setIsLoading(true);
+            try {
+                const client = new BedrockAgentRuntimeClient({
+                    region: "us-east-1",
+                    credentials: {
+                        accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+                        secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+                    }
+                });
+
+                const command = new InvokeAgentCommand({
+                    agentId: "U3YHVQFHVA",
+                    agentAliasId: "GX5MSL1QQU",
+                    sessionId: sessionId,
+                    inputText: input
+                });
+
+                const response = await client.send(command);
+                console.log('API Response:', response);
+
+                let fullResponse = '';
+                const decoder = new TextDecoder('utf-8');
+
+                if (response.completion) {
+                    for await (const event of response.completion) {
+                        if (event.chunk && event.chunk.bytes) {
+                            const byteArray = new Uint8Array(event.chunk.bytes);
+                            fullResponse += decoder.decode(byteArray, { stream: true });
+                        }
+                    }
+
+                    // Remove the typing effect for the initial prompt
+                    // await typingEffect(fullResponse);
+
+                    // Process and display the initial prompt response only once
+                    await processAndDisplayResponse(fullResponse, true);
+
+                    // Mark the initial prompt as processed
+                    setInitialPromptProcessed(true);
+                } else {
+                    console.error('Unexpected API response structure:', response);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            } finally {
+                setIsLoading(false);
+            }
+            return; // Early return after handling the initial prompt
+        }
+
+
         if (input === "User verified successfully." && hasSentVerificationMessage) {
             return; // Exit early if this specific message has already been sent
         }
+
         setIsLoading(true);
-        try {
-            // Your existing API call and response handling...
-
-            if (input === "User verified successfully.") {
-                setHasSentVerificationMessage(true); // Update the state here as well
-            }
-        } finally {
-            setIsLoading(false);
-        }
-
         try {
             const newMessage = { text: actualOTP ? "Done!" : input, isUserMessage: true };
             setMessages(prevMessages => [
@@ -469,129 +523,118 @@ const Agent = () => {
 
             const command = new InvokeAgentCommand({
                 agentId: "U3YHVQFHVA",
-                //agentAliasId: "2QH4N82GG0",
                 agentAliasId: "GX5MSL1QQU",
                 sessionId: sessionId,
                 inputText: actualOTP ? input : newMessage.text
             });
 
-            try {
-                if (actualOTP) {
-                    console.log("OTP received by the agent:", actualOTP);
-                }
+            const response = await client.send(command);
+            console.log('API Response:', response);
 
-                let fullResponse = '';
-                const decoder = new TextDecoder('utf-8');
+            let fullResponse = '';
+            const decoder = new TextDecoder('utf-8');
 
-                const response = await client.send(command);
-                console.log('API Response:', response);
-
-                if (response.completion) {
-                    for await (const event of response.completion) {
-                        if (event.chunk && event.chunk.bytes) {
-                            try {
-                                const byteArray = new Uint8Array(event.chunk.bytes);
-                                const decodedString = decoder.decode(byteArray, { stream: true });
-                                fullResponse += decodedString;
-                            } catch (decodeError) {
-                                console.error("Error decoding chunk:", decodeError);
-                            }
+            if (response.completion) {
+                for await (const event of response.completion) {
+                    if (event.chunk && event.chunk.bytes) {
+                        try {
+                            const byteArray = new Uint8Array(event.chunk.bytes);
+                            const decodedString = decoder.decode(byteArray, { stream: true });
+                            fullResponse += decodedString;
+                        } catch (decodeError) {
+                            console.error("Error decoding chunk:", decodeError);
                         }
                     }
-
-                    await typingEffect(fullResponse);
-
-                    const isOptionMessage = fullResponse.includes("application") || fullResponse.includes("Application");
-                    const isOTPMessage = fullResponse.includes("OTP has been sent to your email address") || fullResponse.includes("invalid") || fullResponse.includes("expired");
-                    const isTicketMessage = fullResponse.includes("The Jira ticket was created successfully!");
-                    const isVideoVerificationMessage = fullResponse.includes("video verification");
-                    const videoVerificationLink = isVideoVerificationMessage ? fullResponse.match(/https:\/\/\S+/)?.[0]?.split(' ')[0] : null;
-
-                    if (isOTPMessage) {
-                        setOtp(['', '', '', '', '', '']); // Reset OTP state
-                        setOtpKey(prevKey => prevKey + 1); // Increment key to force re-render
-                        setShowOTP(true);
-                    } else {
-                        setShowOTP(false); // Hide OTP card for non-OTP messages
-                    }
-                    setMessages(prevMessages => {
-                        const newMessages = prevMessages.slice(0, -1);
-                        newMessages.push({
-                            text: fullResponse,
-                            isUserMessage: false,
-                            showOptions: isOptionMessage,
-                            showOTP: isOTPMessage,
-                            showVideoVerification: isVideoVerificationMessage,
-                            link: isVideoVerificationMessage ? fullResponse.match(/https:\/\/\S+/)?.[0]?.split(' ')[0] : null
-                        });
-                        if (isVideoVerificationMessage && !hasShownVideoVerification) {
-                            newMessages.push({
-                                text: (
-                                    <div style={{ margin: '10px 0' }}>
-                                        <VideoVerificationCard link={videoVerificationLink} />
-                                    </div>
-                                ),
-                                isUserMessage: false
-                            });
-                            setHasShownVideoVerification(true); // Set flag to avoid showing multiple cards
-                        }
-                        return newMessages;
-                    });
-
-
-                    if (isTicketMessage) {
-                        console.log("Full Response:", fullResponse);
-
-                        // Extract the URL from 'https://' up to the first space
-                        const linkMatch = fullResponse.match(/https:\/\/\S+/);
-                        const link = linkMatch ? linkMatch[0].split(' ')[0] : '';
-
-                        // Extract assignedTo and ticketNo using the link or fullResponse
-                        const assignedToMatch = fullResponse.match(/https:\/\/([^\.\n]+)/);
-                        const ticketNoMatch = link.match(/([A-Z]+-\d+)/);
-
-                        console.log("Link:", link);
-                        console.log("Assigned To Match:", assignedToMatch);
-                        console.log("Ticket No Match:", ticketNoMatch);
-
-                        const assignedTo = assignedToMatch ? assignedToMatch[1].trim() : 'Unknown';
-                        const ticketNo = ticketNoMatch ? ticketNoMatch[1] : 'Unknown';
-
-                        // Get the current time
-                        const now = new Date();
-                        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + now.toLocaleDateString();
-
-                        console.log("Assigned To:", assignedTo);
-                        console.log("Ticket No:", ticketNo);
-                        console.log("time:", time);
-
-                        setMessages(prevMessages => [
-                            ...prevMessages,
-                            { text: '', showTicket: true, assignedTo, ticketNo, link, time }
-                        ]);
-                    }
-
-                    setShowOTP(isOTPMessage);
-                    await storeMessage(fullResponse, false);
-
-                } else {
-                    console.error('Unexpected API response structure:', response);
                 }
 
-            } catch (error) {
-                console.error("Error:", error);
-                const errorMessage = "An error occurred while fetching the response.";
+                await typingEffect(fullResponse);
 
-                setMessages(prevMessages => {
-                    const newMessages = prevMessages.slice(0, -1);
-                    newMessages.push({ text: errorMessage, isUserMessage: false });
-                    return newMessages;
-                });
+                // Process and display the response only once
+                await processAndDisplayResponse(fullResponse, true);
+            } else {
+                console.error('Unexpected API response structure:', response);
             }
+        } catch (error) {
+            console.error("Error:", error);
+            const errorMessage = "An error occurred while fetching the response.";
+
+            setMessages(prevMessages => {
+                const newMessages = prevMessages.slice(0, -1);
+                newMessages.push({ text: errorMessage, isUserMessage: false });
+                return newMessages;
+            });
         } finally {
             setIsLoading(false);
         }
     };
+    const processAndDisplayResponse = async (fullResponse, displayMessage) => {
+        console.log("processAndDisplayResponse called with:", fullResponse, displayMessage);
+
+        // Determine what types of messages need to be displayed
+        const isOptionMessage = fullResponse.includes("application") || fullResponse.includes("Application");
+        const isOTPMessage = fullResponse.includes("enter the OTP") || fullResponse.includes("invalid") || fullResponse.includes("expired");
+        const isTicketMessage = fullResponse.includes("The Jira ticket was created successfully!");
+        const isVideoVerificationMessage = fullResponse.includes("video verification");
+        const videoVerificationLink = isVideoVerificationMessage ? fullResponse.match(/https:\/\/\S+/)?.[0]?.split(' ')[0] : null;
+
+        setMessages((prevMessages) => {
+            if (!displayMessage) {
+                return prevMessages; // Early return if no message should be displayed
+            }
+
+            // Remove loading indicator or the last placeholder message
+            const newMessages = [...prevMessages.slice(0, -1)]; // Use a new array to force a state update
+
+            // Construct the base response message
+            const responseMessage = {
+                text: fullResponse,
+                isUserMessage: false,
+                showOptions: isOptionMessage,
+                showOTP: isOTPMessage,
+                showVideoVerification: isVideoVerificationMessage,
+                link: videoVerificationLink,
+                videoVerificationCard: null,
+                ticketInfo: null,
+            };
+
+            // Add video verification card if needed
+            if (isVideoVerificationMessage && !hasShownVideoVerification) {
+                responseMessage.videoVerificationCard = (
+                    <div style={{ margin: '10px 0' }}>
+                        <VideoVerificationCard link={videoVerificationLink} />
+                    </div>
+                );
+                setHasShownVideoVerification(true);  // Ensure this only shows once
+            }
+
+            // Add ticket information card if needed
+            if (isTicketMessage) {
+                const linkMatch = fullResponse.match(/https:\/\/\S+/);
+                const link = linkMatch ? linkMatch[0].split(' ')[0] : '';
+                const assignedToMatch = fullResponse.match(/https:\/\/([^\.\n]+)/);
+                const ticketNoMatch = link.match(/([A-Z]+-\d+)/);
+                const assignedTo = assignedToMatch ? assignedToMatch[1].trim() : 'Unknown';
+                const ticketNo = ticketNoMatch ? ticketNoMatch[1] : 'Unknown';
+                const now = new Date();
+                const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + now.toLocaleDateString();
+
+                responseMessage.ticketInfo = { showTicket: true, assignedTo, ticketNo, link, time };
+            }
+            // Add the constructed response message to the messages list
+            newMessages.push(responseMessage);
+
+            return newMessages;
+        });
+
+        // Update OTP state if necessary
+        setShowOTP(isOTPMessage);
+
+        // Store the message if displayMessage is true
+        if (displayMessage) {
+            await storeMessage(fullResponse, false);
+        }
+    };
+
 
     const ChatInput = ({ onSend, isLoading, isOTPActive }) => {
         const [input, setInput] = useState('');
@@ -687,6 +730,7 @@ const Agent = () => {
             height: '100vh',
             boxSizing: 'border-box',
             padding: '20px',
+            backgroundColor: '#fff',
         }}>
             {showFacialAuth && (
                 <BlurredOverlay>
@@ -701,9 +745,7 @@ const Agent = () => {
                     </CircularContainer>
                 </BlurredOverlay>
             )}
-            <div style={{display:'flex',padding:'10px 10px',justifyContent:'flex-end', width:'100%'}}>
-                <Link to="/"><FontAwesomeIcon icon={faXmark} /></Link>
-            </div>
+
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -714,77 +756,68 @@ const Agent = () => {
                 maxWidth: '1200px',
                 overflowY: 'auto',
                 marginBottom: '20px',
-            }}>
-                
-                {messages.map((message, index) => (
-                    
-                        <div
-                            style={{
-                                alignSelf: message.isUserMessage ? 'flex-end' : 'flex-start',
-                                backgroundColor: message.isUserMessage ? '#001F3F' : '#f8f8f8',
-                                color: message.isUserMessage ? '#fff' : '#000',
-                                padding: '0px 10px 0px 10px',
-                                borderRadius: '10px',
-                                marginBottom: '10px',
-                                marginLeft: '30px',
-                                maxWidth: '60%',
-                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                            }}
-                        >
-                            {typeof message.text === 'string' ? (
-                                message.isUserMessage == false ? 
-                                <div style={{position:'relative'}}>
-                                    <div style={{position:'absolute', marginRight:'10px'}}
-                                    ><img src={logo} style={{height:'30px',width: '30px', borderRadius:'50%',marginLeft:'-40px',marginTop:'-5px'}}/></div>
-                                    <ReactMarkdown children={message.text}></ReactMarkdown>
-                                </div>
-                                :                                    
-                                <ReactMarkdown children={message.text}></ReactMarkdown>
-                                
-                                )
-                              : 
-                              message.text}
-                            {message.isLoading && message.typingEffect}
-                            {message.showOptions && (
-                                <div>
-                                    {options.map((option) => (
-                                        <OptionCard
-                                            key={option.id}
-                                            option={option}
-                                            onClick={() => handleMessageSend(option.text)}
-                                        />
-                                    ))}
-                                </div>
-                            )}
-                            {message.showOTP && showOTP && (
-                                <OTPInputCard
-                                    key={otpKey}
-                                    otp={otp}
-                                    setOtp={setOtp}
-                                    onSubmitOTP={(otpValue) => handleMessageSend(otpValue, true)}
+            }}>{messages.map((message, index) => (
+                <div
+                    key={index}
+                    style={{
+                        alignSelf: message.isUserMessage ? 'flex-end' : 'flex-start',
+                        backgroundColor: message.isUserMessage ? '#001F3F' : '#f8f8f8',
+                        color: message.isUserMessage ? '#fff' : '#000',
+                        padding: '10px 20px',
+                        borderRadius: '10px',
+                        marginBottom: '10px',
+                        maxWidth: '80%',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    }}
+                >
+                    {message.text}
+                    {message.isLoading && message.typingEffect}
+
+                    {message.showOptions && (
+                        <div>
+                            {options.map((option) => (
+                                <OptionCard
+                                    key={option.id}
+                                    option={option}
+                                    onClick={() => handleMessageSend(option.text)}
                                 />
-                            )}
-                            {message.showVideoVerification && !hasShownVideoVerification && (
-                                <VideoVerificationCard
-                                    link={message.link}
-                                    onVerificationComplete={handleAuthComplete}
-                                />
-                            )}
-                            {message.showTicket && (
-                                <TicketCard
-                                    ticketNo={message.ticketNo}
-                                    link={message.link}
-                                    assignedTo={message.assignedTo}
-                                    time={message.time}
-                                />
-                            )}
+                            ))}
                         </div>
-                    
-                ))}
-                
+                    )}
+
+                    {message.showOTP && (
+                        <OTPInputCard
+                            otp={otp}
+                            setOtp={setOtp}
+                            onSubmitOTP={(displayText) =>
+                                setMessages((prevMessages) => [
+                                    ...prevMessages,
+                                    { text: displayText, isUserMessage: true },
+                                ])
+                            }
+                        />
+                    )}
+
+                    {message.showVideoVerification && message.videoVerificationCard && (
+                        <VideoVerificationCard
+                            link={message.link}
+                            onVerificationComplete={handleAuthComplete}
+                        />
+                    )}
+
+                    {message.ticketInfo && message.ticketInfo.showTicket && (
+                        <TicketCard
+                            ticketNo={message.ticketInfo.ticketNo}
+                            link={message.ticketInfo.link}
+                            assignedTo={message.ticketInfo.assignedTo}
+                            time={message.ticketInfo.time}
+                        />
+                    )}
+                </div>
+            ))}
+
                 <div ref={endOfMessagesRef} />
             </div>
-            
             <ChatInput onSend={handleMessageSend} isLoading={isLoading} isOTPActive={showOTP} />
         </div>
     );

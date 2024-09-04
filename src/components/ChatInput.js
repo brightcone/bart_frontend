@@ -59,17 +59,30 @@ const styles = {
     },
 };
 
-const ChatInput = ({ onSend, isLoading }) => {
+// const ChatInput = ({ onSend, isLoading }) => {
+//     const [input, setInput] = useState('');
+
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+//         if (!isLoading && input.trim()) {
+//             onSend(input);
+//             setInput('');
+//         }
+//     };
+    const ChatInput = ({ onSend, isLoading, isOTPActive, isTyping, onStop }) => {
     const [input, setInput] = useState('');
-
+  
     const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!isLoading && input.trim()) {
-            onSend(input);
-            setInput('');
-        }
-    };
+      e.preventDefault();
+      if (isTyping) {
+        onStop();
+      } else if (!isLoading && input.trim()) {
+        onSend(input);
+        setInput('');
+      }
+    };  
 
+ 
     const handleAttachFile = () => {
         console.log('Attachment button clicked');
         // Handle file attachment logic
@@ -81,6 +94,7 @@ const ChatInput = ({ onSend, isLoading }) => {
             handleSubmit(e);
         }
     };
+
 
     return (
         <div style={styles.chatContainer}>
@@ -99,6 +113,18 @@ const ChatInput = ({ onSend, isLoading }) => {
                 <button style={styles.chatButtonSend} onClick={handleSubmit} disabled={isLoading}>
                     <img src={SendSVG} alt="Send Message" style={styles.icon} />
                 </button>
+
+                <button 
+                        style={styles.chatButton} 
+                        onClick={handleSubmit} 
+                        disabled={isLoading || isOTPActive}
+                    >
+                        <img 
+                        src={require('../assets/' + (isTyping ? 'stop.svg' : 'arrow-up-right.svg')).default} 
+                        alt={isTyping ? "Stop" : "Send Message"} 
+                        style={styles.icon} 
+                        />
+              </button>
             </div>
         </div>
     );

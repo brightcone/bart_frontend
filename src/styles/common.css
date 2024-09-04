@@ -1,0 +1,302 @@
+.dashboard {
+    display: flex;
+    height: 100vh;
+    background-color: #000000;
+}
+.sidebar {
+    width: 240px;
+    background-color: #000000;
+    padding: 20px;
+    color: white;
+    border-right: 2px solid #202020;
+    transition: width 0.7s ease; /* Adjust duration and easing function */
+    position: relative;
+}
+.sidebar.collapsed {
+    width: 60px;
+    padding: 10px 10px; 
+
+}
+.toggle-btn {
+    position: absolute;
+    top: 20px;
+    right: -12px;
+    background: none;
+    border: 2px solid #484848; /* Border color and thickness */
+    border-radius: 70%; /* Makes the button circular */
+    color: white;
+    font-size: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the icon within the button */
+    width: 20px; /* Adjust width */
+    height: 20px; /* Adjust height */
+    padding: 10px; /* Add padding if needed */
+    background-color: #000000
+    
+}
+
+.logout-btn {
+    position: absolute;
+    top: 20px;
+    right: 80px; /* Adjust position as needed */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+.profile {
+    text-align: center;
+}
+.profile img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: block;
+    margin: 0 auto;
+}
+.profile-name, .profile-role {
+    display: block;
+}
+.profile-role {
+    margin-top: 5px;
+    color: #888;
+}
+.nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+.nav li {
+    margin: 10px 0;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 20px 20px;
+    border-radius: 20px;
+    background-color: #000000;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+.nav li:hover {
+    transform: scale(1.05); /* Slightly enlarge the template on hover */
+    background-color: #333333;
+}
+.nav li img {
+    margin-right: 10px;
+    width: 24px;
+    height: 24px;
+}
+.nav-text {
+    transition: opacity 10s ease, visibility -5s ease;
+    opacity: 1;
+    visibility: visible;
+}
+.sidebar.collapsed .nav-text {
+    opacity: 0;
+    visibility: hidden;
+}
+.sidebar.collapsed .footerdiv div {
+    display: none;
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    max-width: 240px;
+    padding: 5px;
+    background-color: grey;
+    display: flex;
+    justify-content: center;
+    border-radius: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+.sidebar.collapsed .footer {
+    max-width: 60px;
+}
+.footerdiv {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.footerdiv img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+.footerdiv div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.footerdiv p {
+    margin: 0;
+    color: white;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.content {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    
+    border-radius: 30px;
+    
+}
+.content-box {
+    background-color: #282828;
+    background: linear-gradient(to right, #202020 0%, #171852 100%);
+    border: 2px solid #282828;
+    padding: 20px;
+    margin-top: 10px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    border-radius: 30px;
+    
+    height: 100vh;
+}
+.suggested-templates {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 50px 300px;
+    color:white;
+    position: fixed;
+}
+.templates-header {
+    text-align: center;
+    font-size: 24px;
+    color: white;
+    margin-bottom: 0px;
+    margin-top:200px;
+}
+.template {
+    background-color: #262626;
+    padding: 20px;
+    border-radius: 20px;
+    color: white;
+    text-align: left;
+    cursor:pointer;
+}
+.suggested-templates > .template {
+    background-color: #1F1F1F;
+    border-radius: 50px;
+    padding: 20px;
+    text-align: left;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: white;
+    border: 2px solid #282828;
+    width: 250px;
+    height: 100px;
+    display: flex;
+    align-items: flex-start; 
+    flex-direction: column;
+    text-decoration: none; /* Removes underline from links */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.suggested-templates > .template:hover {
+transform: scale(1.05); /* Slightly enlarge the template on hover */
+background-color: #333333; /* Darken background on hover */
+}
+
+.template-icon {
+margin-right: 10px;
+width: 24px;
+height: 24px;
+margin-bottom: 5px;
+}
+
+.suggested-templates > .template p {
+text-align:left;
+font-size: 16px;
+
+color: #ffffff; /* Ensure text color is white */
+}
+
+.chat {
+        display: flex;
+        justify-content: space-between;
+        background-color: #262626;
+        padding: 10px;
+        border-radius: 50px;
+        border: 1px solid #404040;
+        position: fixed;
+        bottom: 50px;
+        left: 350px; /* Default left position when sidebar is expanded */
+        right: 80px; /* Right side remains fixed */
+        margin: 0;
+        transition: left 0.7s ease; /* Smooth transition for left property */
+    }
+
+    /* When the sidebar is collapsed */
+    .sidebar.collapsed ~ .content .chat {
+        left: 150px; /* Adjust this value based on collapsed sidebar width */
+    }
+
+                
+.chat input {
+    flex: 1;
+    border: none;
+    background: none;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+}
+.chat button {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 0px 0px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.icon {
+    border-radius: 50%;
+    background-color: #444;
+    border: none;
+    padding: 20px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.logout {
+    position: absolute;
+    top: 50px; /* Adjust the top position as needed */
+    right: 50px; /* Adjust the right position as needed */
+    background-color: #444; /* Background color for the button */
+    border: none; /* Remove default border */
+    border-radius: 50%; /* Make the button circular */
+    width: 30px; /* Set the width and height for the circular button */
+    height: 30px;
+    display: flex; /* Center the icon inside the button */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer; /* Change cursor to pointer on hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Optional: Add shadow */
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+}
+
+.logout img {
+width: 40px; /* Adjust icon size */
+height: 40px;
+}
+
+.logout:hover {
+background-color: #555; /* Change background color on hover */
+}
