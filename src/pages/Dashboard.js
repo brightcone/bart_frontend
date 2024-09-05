@@ -1,34 +1,32 @@
-
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Icon1 from '../assets/password.svg';
-import Icon2 from '../assets/laptop-1.svg';
-import Icon3 from '../assets/laptop.svg';
-import Icon4 from '../assets/computer-settings.svg';
-import Icon5 from '../assets/wifi.svg';
-import Icon6 from '../assets/cleaning-brush.svg';
-import Icon7 from '../assets/plus-circle.svg';
-import Icon8 from '../assets/arrow-circle-up.svg';
-import Icon9 from '../assets/lightning.svg';
-import Icon10 from '../assets/house.svg';
-import Icon11 from '../assets/plus.svg';
-import Icon12 from '../assets/magnifying-glass.svg';
-import Icon13 from '../assets/circles-four.svg';
-import Icon14 from '../assets/clock-counter-clockwise.svg';
-import Icon15 from '../assets/sticker.svg';
-import Icon16 from '../assets/gear-six.svg';
-import Icon17 from '../assets/profile.svg';
-import Icon18 from '../assets/image 45.svg';
-import LessThanIcon from '../assets/less-than.svg';
-import GreaterThanIcon from '../assets/greater-than.svg';
-import LogoutIcon from '../assets/Genie.svg'; 
-import '../styles/common.css';
-
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Icon1 from "../assets/password.svg";
+import Icon2 from "../assets/laptop-1.svg";
+import Icon3 from "../assets/laptop.svg";
+import Icon4 from "../assets/computer-settings.svg";
+import Icon5 from "../assets/wifi.svg";
+import Icon6 from "../assets/cleaning-brush.svg";
+import Icon7 from "../assets/plus-circle.svg";
+import Icon8 from "../assets/arrow-circle-up.svg";
+import Icon9 from "../assets/lightning.svg";
+import Icon10 from "../assets/house.svg";
+import Icon11 from "../assets/plus.svg";
+import Icon12 from "../assets/magnifying-glass.svg";
+import Icon13 from "../assets/circles-four.svg";
+import Icon14 from "../assets/clock-counter-clockwise.svg";
+import Icon15 from "../assets/sticker.svg";
+import Icon16 from "../assets/gear-six.svg";
+import Icon17 from "../assets/profile.svg";
+import Icon18 from "../assets/image 45.svg";
+import LessThanIcon from "../assets/less-than.svg";
+import GreaterThanIcon from "../assets/greater-than.svg";
+import LogoutIcon from "../assets/Genie.svg";
+import "../styles/common.css";
+import { Box } from "@mui/material";
 
 const Dashboard = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
-  
+
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
     };
@@ -36,359 +34,89 @@ const Dashboard = () => {
     const handleTemplateClick = (path) => {
         navigate(path);
     };
- 
 
     return (
         <div className="dashboard">
-            <style>
-                {`
-                    .dashboard {
-                        display: flex;
-                        height: 100vh;
-                        background-color: #000000;
-                    }
-                 .sidebar {
-                        width: 240px;
-                        background-color: #000000;
-                        padding: 20px;
-                        color: white;
-                        border-right: 2px solid #202020;
-                        transition: width 0.7s ease; /* Adjust duration and easing function */
-                        position: relative;
-                    }
-                    .sidebar.collapsed {
-                        width: 60px;
-                        padding: 10px 10px; 
-
-                    }
-                    .toggle-btn {
-                        position: absolute;
-                        top: 20px;
-                        right: -12px;
-                        background: none;
-                        border: 2px solid #484848; /* Border color and thickness */
-                        border-radius: 70%; /* Makes the button circular */
-                        color: white;
-                        font-size: 3px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center; /* Center the icon within the button */
-                        width: 20px; /* Adjust width */
-                        height: 20px; /* Adjust height */
-                        padding: 10px; /* Add padding if needed */
-                        background-color: #000000
-                        
-                    }
-
-                    .logout-btn {
-                        position: absolute;
-                        top: 20px;
-                        right: 80px; /* Adjust position as needed */
-                        background: none;
-                        border: none;
-                        color: white;
-                        font-size: 24px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                    }
-                    .profile {
-                        text-align: center;
-                    }
-                    .profile img {
-                        border-radius: 50%;
-                        width: 50px;
-                        height: 50px;
-                        display: block;
-                        margin: 0 auto;
-                    }
-                    .profile-name, .profile-role {
-                        display: block;
-                    }
-                    .profile-role {
-                        margin-top: 5px;
-                        color: #888;
-                    }
-                    .nav ul {
-                        list-style-type: none;
-                        padding: 0;
-                        margin: 0;
-                    }
-                    .nav li {
-                        margin: 10px 0;
-                        font-size: 16px;
-                        cursor: pointer;
-                        padding: 20px 20px;
-                        border-radius: 20px;
-                        background-color: #000000;
-                        color: white;
-                        display: flex;
-                        align-items: center;
-                    }
-                    .nav li:hover {
-                        transform: scale(1.05); /* Slightly enlarge the template on hover */
-                        background-color: #333333;
-                    }
-                    .nav li img {
-                        margin-right: 10px;
-                        width: 24px;
-                        height: 24px;
-                    }
-                    .nav-text {
-                        transition: opacity 10s ease, visibility -5s ease;
-                        opacity: 1;
-                        visibility: visible;
-                    }
-                    .sidebar.collapsed .nav-text {
-                        opacity: 0;
-                        visibility: hidden;
-                    }
-                    .sidebar.collapsed .footerdiv div {
-                        display: none;
-                    }
-                    .footer {
-                        position: absolute;
-                        bottom: 0;
-                        width: 100%;
-                        max-width: 240px;
-                        padding: 5px;
-                        background-color: grey;
-                        display: flex;
-                        justify-content: center;
-                        border-radius: 20px;
-                        box-sizing: border-box;
-                        overflow: hidden;
-                    }
-                    .sidebar.collapsed .footer {
-                        max-width: 60px;
-                    }
-                    .footerdiv {
-                        display: flex;
-                        align-items: center;
-                        width: 100%;
-                    }
-                    .footerdiv img {
-                        width: 50px;
-                        height: 50px;
-                        margin-right: 10px;
-                    }
-                    .footerdiv div {
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                    }
-                    .footerdiv p {
-                        margin: 0;
-                        color: white;
-                        text-align: left;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-                    .content {
-                        flex: 1;
-                        padding: 10px;
-                        display: flex;
-                        flex-direction: column;
-                        
-                        border-radius: 30px;
-                        
-                    }
-                    .content-box {
-                        background-color: #282828;
-                        background: linear-gradient(to right, #202020 0%, #171852 100%);
-                        border: 2px solid #282828;
-                        padding: 20px;
-                        margin-top: 10px;
-                        margin-right: 20px;
-                        margin-bottom: 10px;
-                        margin-left: 20px;
-                        border-radius: 30px;
-                        
-                        height: 100vh;
-                    }
-                    .suggested-templates {
-                        display: grid;
-                        grid-template-columns: repeat(3, 1fr);
-                        gap: 15px;
-                        justify-content: center;
-                        align-items: center;
-                        margin: 0 auto;
-                        padding: 50px 300px;
-                        color:white;
-                        position: fixed;
-                    }
-                    .templates-header {
-                        text-align: center;
-                        font-size: 24px;
-                        color: white;
-                        margin-bottom: 0px;
-                        margin-top:200px;
-                    }
-                    .template {
-                        background-color: #262626;
-                        padding: 20px;
-                        border-radius: 20px;
-                        color: white;
-                        text-align: left;
-                        cursor:pointer;
-                    }
-                    .suggested-templates > .template {
-                        background-color: #1F1F1F;
-                        border-radius: 50px;
-                        padding: 20px;
-                        text-align: left;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                        color: white;
-                        border: 2px solid #282828;
-                        width: 250px;
-                        height: 100px;
-                        display: flex;
-                        align-items: flex-start; 
-                        flex-direction: column;
-                        text-decoration: none; /* Removes underline from links */
-                        transition: transform 0.3s ease, background-color 0.3s ease;
-                    }
-
-                    .suggested-templates > .template:hover {
-                    transform: scale(1.05); /* Slightly enlarge the template on hover */
-                    background-color: #333333; /* Darken background on hover */
-                    }
-
-                    .template-icon {
-                    margin-right: 10px;
-                    width: 24px;
-                    height: 24px;
-                    margin-bottom: 5px;
-                    }
-
-                    .suggested-templates > .template p {
-                    text-align:left;
-                    font-size: 16px;
-                    
-                    color: #ffffff; /* Ensure text color is white */
-                    }
-
-                    .chat {
-                            display: flex;
-                            justify-content: space-between;
-                            background-color: #262626;
-                            padding: 10px;
-                            border-radius: 50px;
-                            border: 1px solid #404040;
-                            position: fixed;
-                            bottom: 50px;
-                            left: 350px; /* Default left position when sidebar is expanded */
-                            right: 80px; /* Right side remains fixed */
-                            margin: 0;
-                            transition: left 0.7s ease; /* Smooth transition for left property */
-                        }
-
-                        /* When the sidebar is collapsed */
-                        .sidebar.collapsed ~ .content .chat {
-                            left: 150px; /* Adjust this value based on collapsed sidebar width */
-                        }
-
-                                    
-                    .chat input {
-                        flex: 1;
-                        border: none;
-                        background: none;
-                        color: white;
-                        font-size: 16px;
-                        padding: 10px;
-                    }
-                    .chat button {
-                        background-color: #444;
-                        color: white;
-                        border: none;
-                        padding: 0px 0px;
-                        border-radius: 50%;
-                        cursor: pointer;
-                    }
-                    .icon {
-                        border-radius: 50%;
-                        background-color: #444;
-                        border: none;
-                        padding: 20px;
-                        cursor: pointer;
-                        width: 30px;
-                        height: 30px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    }
-                    .logout {
-                        position: absolute;
-                        top: 50px; /* Adjust the top position as needed */
-                        right: 50px; /* Adjust the right position as needed */
-                        background-color: #444; /* Background color for the button */
-                        border: none; /* Remove default border */
-                        border-radius: 50%; /* Make the button circular */
-                        width: 30px; /* Set the width and height for the circular button */
-                        height: 30px;
-                        display: flex; /* Center the icon inside the button */
-                        align-items: center;
-                        justify-content: center;
-                        cursor: pointer; /* Change cursor to pointer on hover */
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Optional: Add shadow */
-                        transition: background-color 0.3s ease; /* Smooth background color transition */
-                }
-
-                .logout img {
-                    width: 40px; /* Adjust icon size */
-                    height: 40px;
-                }
-
-                .logout:hover {
-                    background-color: #555; /* Change background color on hover */
-                }
-                `}
-            </style>
-           <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-                 <button className="toggle-btn" onClick={toggleSidebar}>
-                     <img src={isCollapsed ? GreaterThanIcon : LessThanIcon} alt="Toggle Icon" />
-                 </button>
-                 <div className="profile">
-                     <img src={Icon17} alt="Profile" />
-                     <span className="profile-name">Floyd Miles</span>
-                   <small className="profile-role">Product Manager</small>
-                 </div>
-                 <nav className="nav">
-                   <ul>
-                         <li><img src={Icon10} alt="Icon 10" className="template-icon" /><span className="nav-text">Home</span></li>
-                         <li><img src={Icon11} alt="Icon 11" className="template-icon" /><span className="nav-text">New chat</span></li>
-                         <li><img src={Icon12} alt="Icon 12" className="template-icon" /><span className="nav-text">Search</span></li>
-                         <li><img src={Icon13} alt="Icon 13" className="template-icon" /><span className="nav-text">Templates</span></li>
-                         <li><img src={Icon14} alt="Icon 14" className="template-icon" /><span className="nav-text">History</span></li>
-                         <li><img src={Icon15} alt="Icon 15" className="template-icon" /><span className="nav-text">Tickets</span></li>
-                         <li><img src={Icon16} alt="Icon 16" className="template-icon" /><span className="nav-text">Settings</span></li>
-                     </ul>
-                 </nav>
-               <footer className='footer'>
-                    <div className='footerdiv'>
+            <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+                <button className="toggle-btn" onClick={toggleSidebar}>
+                    <img
+                        src={isCollapsed ? GreaterThanIcon : LessThanIcon}
+                        alt="Toggle Icon"
+                    />
+                </button>
+                <div className="profile">
+                    <img src={Icon17} alt="Profile" />
+                    <Box sx={{ display: { xs: isCollapsed ? "none" : "block" } }}>
+                        <span className="profile-name">Floyd Miles</span>
+                        <small className="profile-role">Product Manager</small>
+                    </Box>
+                </div>
+                <nav className="nav">
+                    <ul>
+                        <li>
+                            <Link to='/dashboard' style={{ textDecoration: 'none', color: '#fff', display: 'flex', alignItems: 'center' }}>
+                                <img src={Icon10} alt="Icon 10" className="template-icon" />
+                                <span className="nav-text">Home</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <img src={Icon11} alt="Icon 11" className="template-icon" />
+                            <span className="nav-text">New chat</span>
+                        </li>
+                        <li>
+                            <img src={Icon12} alt="Icon 12" className="template-icon" />
+                            <span className="nav-text">Search</span>
+                        </li>
+                        <li>
+                            <img src={Icon13} alt="Icon 13" className="template-icon" />
+                            <span className="nav-text">Templates</span>
+                        </li>
+                        <li>
+                            <Link to='/history' style={{ textDecoration: 'none', color: '#fff', display: 'flex', alignItems: 'center' }}>
+                                <img src={Icon14} alt="Icon 14" className="template-icon1" />
+                                <span className="nav-text">History</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <img src={Icon15} alt="Icon 15" className="template-icon" />
+                            <span className="nav-text">Tickets</span>
+                        </li>
+                        <li>
+                            <img src={Icon16} alt="Icon 16" className="template-icon" />
+                            <span className="nav-text">Settings</span>
+                        </li>
+                    </ul>
+                </nav>
+                <footer className="footer">
+                    <div className="footerdiv">
                         <img src={Icon18} alt="BART Logo" />
-                        <div>
-                             <p><strong>BART</strong></p>
-                             <p>Bay Area Rapid Transit</p>
-                         </div>
-                     </div>
-                 </footer>
-             </aside>
-             <main className="content">
-             
-                 <div className="content-box">
-                        <button className="logout">
-                            <img src={LogoutIcon} alt="Logout" />
-                        </button>
-                     <p className="templates-header"><img src={Icon9} alt="Icon 9" className="template-icon" />Suggested Templates</p> 
-                     <div className="suggested-templates">
-                        <div className="template" onClick={() => handleTemplateClick('/agent')}>
-                                <img src={Icon1} alt="Icon 1" className="template-icon" />
-                                <p>Reset your application passwords with ease.</p>
-                            </div>
-                         <a href="request-equipment-url" className="template">
+                        <Box sx={{ display: { xs: isCollapsed ? "none" : "block" } }}>
+                            <p>
+                                <strong>BART</strong>
+                            </p>
+                            <p>Bay Area Rapid Transit</p>
+                        </Box>
+                    </div>
+                </footer>
+            </aside>
+            <main className="content">
+                <div className="content-box">
+                    <button className="logout">
+                        <img src={LogoutIcon} alt="Logout" />
+                    </button>
+                    <p className="templates-header">
+                        <img src={Icon9} alt="Icon 9" className="template-icon" />
+                        Suggested Templates
+                    </p>
+                    <div className="suggested-templates">
+                        <div
+                            className="template"
+                            onClick={() => handleTemplateClick("/agent")}
+                        >
+                            <img src={Icon1} alt="Icon 1" className="template-icon" />
+                            <p>Reset your application passwords with ease.</p>
+                        </div>
+                        <a href="request-equipment-url" className="template">
                             <img src={Icon2} alt="Icon 2" className="template-icon" />
                             <p>Seamlessly request and track new equipment approvals.</p>
                         </a>
@@ -398,11 +126,15 @@ const Dashboard = () => {
                         </a>
                         <a href="software-installation-url" className="template">
                             <img src={Icon4} alt="Icon 4" className="template-icon" />
-                            <p>Install software with guided instructions and ticket updates.</p>
+                            <p>
+                                Install software with guided instructions and ticket updates.
+                            </p>
                         </a>
                         <a href="connectivity-issues-url" className="template">
                             <img src={Icon5} alt="Icon 5" className="template-icon" />
-                            <p>Report connectivity issues and manage network configurations.</p>
+                            <p>
+                                Report connectivity issues and manage network configurations.
+                            </p>
                         </a>
                         <a href="equipment-maintenance-url" className="template">
                             <img src={Icon6} alt="Icon 6" className="template-icon" />
@@ -410,22 +142,20 @@ const Dashboard = () => {
                         </a>
                     </div>
 
-                     <div className="chat">
-                            <img src={Icon7} alt="Icon 7" className="template-icon" />
-                            <input type="text" placeholder="Ask BART Genie" />
-                            <button className='icon'><img src={Icon8} alt="Icon 8" className="template-icon" /></button>
-                        </div>
-             
-                     
-                     </div>
-              
-             </main>
-         </div>
-   );
-}
+                    <div className="chat" style={{ position: 'fixed' }}>
+                        <img src={Icon7} alt="Icon 7" />
+                        <input type="text" placeholder="Ask BART Genie" />
+                        <button className="icon1">
+                            <img src={Icon8} alt="Icon 8" className="template-icon1" />
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+};
 
 export default Dashboard;
-
 
 // import React, { useState } from 'react';
 // import Icon1 from '../assets/password.svg';
@@ -558,7 +288,6 @@ export default Dashboard;
 //                         max-width: 60px; /* Adjust width to match the collapsed sidebar */
 //                     }
 
-
 //                     .footerdiv {
 //                         display: flex;
 //                         align-items: center; /* Center the image and text vertically */
@@ -590,7 +319,7 @@ export default Dashboard;
 //                         display: flex;
 //                         flex-direction: column;
 //                         justify-content: space-between;
-//                         border-radius: 30px; 
+//                         border-radius: 30px;
 //                     }
 //                     .content-box {
 //                         background-color: #282828;
@@ -604,10 +333,10 @@ export default Dashboard;
 //                         border-radius: 30px; /* Optional, for rounded corners */
 //                         // height: 1200px;
 //                         position: relative;
-//                         height: 100vh; 
+//                         height: 100vh;
 
 //                     }
-                       
+
 //                     .suggested-templates {
 //                         display: grid;
 //                         grid-template-columns: repeat(3, 1fr); /* Adjust the number 3 to how many columns you want */
@@ -623,14 +352,14 @@ export default Dashboard;
 //                         font-size: 24px; /* Adjust font size as needed */
 //                         color: white; /* Adjust color as needed */
 //                         margin-bottom: 0px; /* Add spacing between header and grid */
-//                         margin-top:200px;                 
+//                         margin-top:200px;
 //                     }
 //                     .template {
 //                         background-color: #262626;
 //                         padding: 20px;
 //                         border-radius: 20px;
 //                         color: white;
-                        
+
 //                         text-align: left;
 //                     }
 //                     .suggested-templates > .template {
@@ -643,7 +372,7 @@ export default Dashboard;
 //                         border: 2px solid #282828;
 //                         width: 250px; /* Set the fixed width */
 //                         height: 100px; /* Set the fixed height */
-                        
+
 //                     }
 //                     .chat {
 //                         display: flex;
@@ -665,7 +394,7 @@ export default Dashboard;
 //                         color: white;
 //                         font-size: 16px;
 //                         padding: 10px;
-                        
+
 //                     }
 //                     .chat button {
 //                         background-color: #444;
@@ -674,7 +403,7 @@ export default Dashboard;
 //                         padding: 10px 15px;
 //                         border-radius: 8px;
 //                         cursor: pointer;
-                        
+
 //                     }
 //                     .icon{
 //                         border-radius: 50%;
@@ -690,7 +419,7 @@ export default Dashboard;
 //                         width: 30px; /* Adjust size as needed */
 //                         height: 30px; /* Adjust size as needed */
 //                     }
-               
+
 //                 `}
 //             </style>
 //             <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
@@ -726,7 +455,7 @@ export default Dashboard;
 //             </aside>
 //             <main className="content">
 //                 <div className="content-box">
-//                     <p className="templates-header"><img src={Icon9} alt="Icon 9" className="template-icon" />Suggested Templates</p> 
+//                     <p className="templates-header"><img src={Icon9} alt="Icon 9" className="template-icon" />Suggested Templates</p>
 //                     <div className="suggested-templates">
 //                         <div className="template">
 //                             <img src={Icon1} alt="Icon 1" className="template-icon" />
@@ -752,7 +481,7 @@ export default Dashboard;
 //                             <img src={Icon6} alt="Icon 6" className="template-icon" />
 //                             <p>Schedule equipment maintenance effortlessly.</p>
 //                         </div>
-              
+
 //                     </div>
 //                     <div className="chat">
 //                     <img src={Icon7} alt="Icon 7" className="template-icon" />
@@ -760,12 +489,11 @@ export default Dashboard;
 //                     <button className='icon'><img src={Icon8} alt="Icon 8" className="template-icon" /></button>
 //                 </div>
 //                     </div>
-                
+
 //             </main>
 //         </div>
-       
+
 //     );
 // }
 
 // export default Dashboard;
-

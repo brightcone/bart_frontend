@@ -4,6 +4,7 @@ import SignupForm from './pages/SignupForm';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import Agent from './pages/Agent';
+import History from './pages/History';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} />
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/agent" />} />
+        <Route path="/history" element={isAuthenticated ? <History /> : <Navigate to="/agent" />} />
         <Route path="/agent" element={isAuthenticated ? <Agent /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
