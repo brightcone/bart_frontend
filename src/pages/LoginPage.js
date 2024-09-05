@@ -7,8 +7,12 @@ import Webcam from 'react-webcam';
 import successIcon from '../assets/success-icon.png';
 import backgroundImage from '../assets/sparkles.svg';
 import Genie from '../assets/Genie.svg';
+import Photo from '../assets/camera.svg';
+import Email from '../assets/camera1.svg';
+import Eye from '../assets/eye.svg';
 import { Buffer } from 'buffer';
-
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // Configure AWS SDK
 AWS.config.update({
     accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
@@ -36,7 +40,8 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#1F1F1F',
-        width:'50%'
+        width:'100%',
+        
         
     },
     video: {
@@ -53,7 +58,8 @@ const styles = {
         padding: '20px',
         backgroundColor: '#1F1F1F',
         boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.3)',
-        backgroundImage:`url(${backgroundImage})`
+        backgroundImage:`url(${backgroundImage})`,
+        
     },
     loginBox: {
         width: '360px',
@@ -63,16 +69,31 @@ const styles = {
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         textAlign: 'center',
         color: 'white',
+        
+    },
+    inputContainer: {
+        position: 'relative',
+        width: '100%',
+        margin: '20px 0',
     },
     input: {
-        width: '90%',
+        width: '100%', // Ensure the input takes full width of the container
         padding: '12px',
-        margin: '8px 0',
+        paddingRight: '40px', // Space for the icon
         borderRadius: '30px',
-        border: '1px solid #333333',
+        border: '1px solid #404040',
         backgroundColor: '#2C2C2C',
         color: '#FFFFFF',
         fontSize: '16px',
+        boxSizing: 'border-box',
+    },
+    passwordToggle: {
+        position: 'absolute',
+        right: '12px', // Adjust to fit within the padding of the input
+        top: '50%',
+        transform: 'translateY(-50%)',
+        cursor: 'pointer',
+        color: '#aaa', // Adjust color as needed
     },
     button: {
         width: '100%',
@@ -92,6 +113,11 @@ const styles = {
         color: 'white',
         textDecoration: 'underline',
     },
+    link1: {
+        color: 'white',
+        textDecoration: 'none',
+        fontSize:'14px'
+    },
     switchContainer: {
         display: 'flex',
         justifyContent: 'center',
@@ -102,35 +128,41 @@ const styles = {
         cursor: 'pointer',
         border: 'none',
         borderRadius: '8px',
-        backgroundColor: '#333333',
+        backgroundColor: '#6719f7',
         color: '#FFFFFF',
         margin: '0 10px',
     },
     switchActive: {
-        backgroundColor: '#007bff',
+        backgroundColor: '#d881b6',
     },
     webcamContainer: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        borderRadius: '30px',  // Ensures curved corners
+        overflow: 'hidden',    // Ensures content inside follows the curved border
+        border: '2px solid #e0e0e0', // Optional, for visible border
+        
     },
     instruction: {
         marginTop: '16px',
         color: '#FFFFFF',
         fontSize: '16px',
+        textAlign: 'center',
     },
     progressBar: {
         width: '100%',
         height: '8px',
-        backgroundColor: '#333333',
+        backgroundColor: '#000', // A light background for the empty part of the bar
         borderRadius: '4px',
         overflow: 'hidden',
         marginTop: '12px',
     },
     progress: {
         height: '100%',
-        backgroundColor: '#007bff',
-    },
+        background: 'linear-gradient(to right, #e189b0 0%, #6b1df5 100%)',
+        transition: 'width 0.4s ease', // Smooth transition as the progress bar fills
+    },    
     successIcon: {
         width: '50px',
         height: '50px',
@@ -139,8 +171,23 @@ const styles = {
         opacity: 0,
     },
     successIconVisible: {
-        opacity: 1,
+        opacity: 0,
     },
+    trainLogo: {
+        width: '20px',
+        position: 'relative',
+        top: '60%',
+        left: '10%',
+        transform: 'translate(-50%, -50%)'
+    },
+    Genie: {
+        width: '60px',
+        padding:'30px'
+
+      
+    },
+
+
 };
 
 const LoginPage = ({ setIsAuthenticated }) => {
@@ -158,7 +205,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
     const lastFacePositionRef = useRef(null);
     const blinkCountRef = useRef(0);
     const actionSequenceRef = useRef([]);
-
+    const [passwordVisible, setPasswordVisible] = useState(false);
     useEffect(() => {
         if (isPhotoLogin) {
             startLivenessCheck();
@@ -193,12 +240,32 @@ const LoginPage = ({ setIsAuthenticated }) => {
     const getNextInstruction = () => {
         const action = actionSequenceRef.current[0];
         switch (action) {
-            case 'right': return 'Please turn your head to the left';
-            case 'left': return 'Please turn your head to the right';
-            case 'blink': return 'Please blink twice';
-            default: return 'Verifying...';
+            case 'right': 
+                return 'Please turn your head to the left';
+            case 'left': 
+                return 'Please turn your head to the right';
+            case 'blink': 
+                return (
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <img 
+                            src={Eye}
+                            alt="Eye Blink"
+                            style={{  width: '24px',             
+                                height: '24px',              
+                                marginRight: '20px',          
+                                marginLeft: '80px',          
+                                display: 'flex',             
+                                justifyContent: 'center',    
+                                alignItems: 'center', }} 
+                        />
+                        Please blink twice
+                    </div>
+                );
+            default: 
+                return 'Verifying...';
         }
     };
+    
     const TIMEOUT_DURATION = 60000; // 1 minute
 
     useEffect(() => {
@@ -421,66 +488,87 @@ const LoginPage = ({ setIsAuthenticated }) => {
             </div>
             <div style={styles.loginContainer}>
             <div style={styles.loginBox}>
-                 <img src={Genie} alt="Genie Logo" style={styles.trainLogo} />
-                <h2>Login</h2>
+                 <img src={Genie} alt="Genie Logo" style={styles.Genie} />
+                <h3>Log in</h3>
                 <div style={styles.switchContainer}>
                     <button
                         style={{ ...styles.switchButton, ...(isPhotoLogin ? {} : styles.switchActive) }}
                         onClick={() => handleSwitch('email')}
                     >
-                        Email
+                        <img src={Email} alt="EmailLogin" style={styles.trainLogo} />
+                        via Email
                     </button>
                     <button
                         style={{ ...styles.switchButton, ...(isPhotoLogin ? styles.switchActive : {}) }}
                         onClick={() => handleSwitch('photo')}
-                    >
-                        Photo Login
+                    >   
+                        <img src={Photo} alt="PhotoLogin" style={styles.trainLogo} />
+                        via Video
                     </button>
                 </div>
                 {isPhotoLogin ? (
-                    <div style={styles.webcamContainer}>
-                        <Webcam
-                            audio={false}
-                            ref={webcamRef}
-                            screenshotFormat="image/jpeg"
-                            width="100%"
-                        />
-                        {isAnalyzing && (
-                            <>
-                                <div style={styles.instruction}>{instruction}</div>
-                                <div style={styles.progressBar}>
-                                    <div style={{ ...styles.progress, width: `${progress}%` }}></div>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                ) : (
+                        <>
+                            <div style={styles.webcamContainer}>
+                                <Webcam
+                                    audio={false}
+                                    ref={webcamRef}
+                                    screenshotFormat="image/jpeg"
+                                    width="100%"
+                                />
+                            </div>
+
+                            {isAnalyzing && (
+                                <>
+                                    <div style={styles.instructionContainer}>
+                                        <div style={styles.instruction}>{instruction}</div>
+                                    </div>
+
+                                    <div style={styles.progressBarContainer}>
+                                        <div style={styles.progressBar}>
+                                            <div style={{ ...styles.progress, width: `${progress}%` }}></div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </>
+                    ) :(
                     <>
                         <input
                             type="email"
-                            placeholder="Email"
+                            placeholder="Email or Username"
                             style={styles.input}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             onKeyDown={handleKeyDown}
                         />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            style={styles.input}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                        />
+                        
+                        <div style={styles.inputContainer}>
+                            <input
+                                type={passwordVisible ? 'text' : 'password'}
+                                placeholder="Password"
+                                style={styles.input}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                            />
+                            <FontAwesomeIcon
+                                icon={passwordVisible ? faEye : faEyeSlash}
+                                style={styles.passwordToggle}
+                                onClick={() => setPasswordVisible(!passwordVisible)}
+                            />
+                        </div>
+
+                                      
+                     
                         <button style={styles.button} onClick={handleEmailPasswordLogin}>
                             Enter
                         </button>
                     </>
                 )}
-                {loginSuccess && <img src={successIcon} alt="Success" style={{ ...styles.successIcon, ...styles.successIconVisible }} />}
+                {loginSuccess}
                 {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
                 <div style={styles.linkContainer}>
-                    <a href="/signup" style={styles.link}>
+                    <a href="/signup" style={styles.link1}>
                         Forget your password?
                     </a>
                 </div>

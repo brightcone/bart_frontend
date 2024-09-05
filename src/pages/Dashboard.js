@@ -26,7 +26,7 @@ import { Box } from "@mui/material";
 
 const Dashboard = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
-
+    const [showLogoutButton, setShowLogoutButton] = useState(false);
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
     };
@@ -34,6 +34,16 @@ const Dashboard = () => {
     const handleTemplateClick = (path) => {
         navigate(path);
     };
+    const handleConfirmLogout = () => {
+        // Redirect to the LoginPage
+        navigate('/login');
+    };
+    const handleLogoutClick = () => {
+        // Toggle the visibility of the logout button
+        setShowLogoutButton(true);
+    };
+
+        
 
     return (
         <div className="dashboard">
@@ -82,8 +92,10 @@ const Dashboard = () => {
                             <span className="nav-text">Tickets</span>
                         </li>
                         <li>
-                            <img src={Icon16} alt="Icon 16" className="template-icon" />
-                            <span className="nav-text">Settings</span>
+                            <Link to='/settings' style={{ textDecoration: 'none', color: '#fff', display: 'flex', alignItems: 'center' }}>
+                                <img src={Icon16} alt="Icon 16" className="template-icon" />
+                                <span className="nav-text">Settings</span>
+                            </Link>
                         </li>
                     </ul>
                 </nav>
@@ -101,9 +113,17 @@ const Dashboard = () => {
             </aside>
             <main className="content">
                 <div className="content-box">
-                    <button className="logout">
-                        <img src={LogoutIcon} alt="Logout" />
-                    </button>
+                    <div className="logout-container">
+                        {!showLogoutButton ? (
+                            <button className="logout" onClick={handleLogoutClick} >
+                                <img src={LogoutIcon} alt="Logout" />
+                            </button>
+                        ) : (
+                            <button className="logout-confirm" onClick={handleConfirmLogout} >
+                                Logout
+                            </button>
+                        )}
+                    </div>
                     <p className="templates-header">
                         <img src={Icon9} alt="Icon 9" className="template-icon" />
                         Suggested Templates
