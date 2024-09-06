@@ -13,7 +13,7 @@ import Icon7 from "../assets/plus-circle.svg";
 import Icon5 from "../assets/wifi.svg";
 import LeftPanel from "../components/LeftPanel";
 import "../styles/common.css";
-
+import dot from "../assets/dot.svg";
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -124,6 +124,7 @@ const DashboardContent = () => {
 
             <div className="chat" style={{ position: 'absolute' }}>
                 <img src={Icon7} alt="Icon 7" />
+                
                 <input type="text" placeholder="Ask BART Genie" />
                 <img src={Icon8} alt="Icon 8" className="template-icon1" />
                 {/* <button className="icon1"></button> */}
@@ -132,4 +133,4 @@ const DashboardContent = () => {
     )
 }
 
-export default DashboardContent
+export default DashboardContent;

@@ -15,7 +15,7 @@ import { Box } from '@mui/material';
 // import Home from "../assets/house.svg";
 import BART from "../assets/image 45.svg";
 import Profile from "../assets/profile.svg";
-
+import arrow from "../assets/arrow-up-right.svg";
 const menuItems = [
     { id: 1, name: 'Home', icon: <HomeOutlined />, path: '/' },
     { id: 2, name: 'New Chat', icon: <AddIcon />, path: '/new-chat' },
@@ -67,9 +67,9 @@ const LeftPanel = () => {
                         <img src={BART} alt="BART Logo" />
                         <Box sx={{ visibility: { xs: isCollapsed ? "hidden" : "visible" } }} >
                             <p>
-                                <strong>BART</strong>
+                                <strong>BART <img className="arrow" src={arrow} alt="arrow" /></strong>
                             </p>
-                            <p>Bay Area Rapid Transit</p>
+                            <p className='bart'>Bay Area Rapid Transit</p>
                         </Box>
                     </div>
                 </footer>
