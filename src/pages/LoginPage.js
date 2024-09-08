@@ -191,8 +191,8 @@ const styles = {
 };
 
 const LoginPage = ({ setIsAuthenticated }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('surya@brightcone.ai');
+    const [password, setPassword] = useState('Rama@1234');
     const [isPhotoLogin, setIsPhotoLogin] = useState(false);
     const [error, setError] = useState('');
     const [loginSuccess, setLoginSuccess] = useState(false);
