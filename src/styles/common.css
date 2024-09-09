@@ -4,6 +4,8 @@ html {
   padding: 0;
   height: 100%;
   background-color: #000000;
+  height: 100vh; /* Ensure the body takes the full viewport height */
+
 }
 
 .dashboard {
@@ -436,4 +438,243 @@ h3 {
   position: relative;
   z-index: 2; /* This keeps the content on top of the blur */
   top: 10rem;
+}
+
+.agent-container {
+  display: flex;
+  height: 100vh;
+  background: linear-gradient(to right, #202020 0%, #171852 100%);
+  color: #ffffff;
+}
+
+
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #2d2d3e;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.chat-message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px; /* Add margin between individual messages */
+}
+
+.message-row {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.avatar {
+  margin-right: 20px; /* Adjust this value to set the gap between the logo and the text */
+  flex-shrink: 0;
+}
+
+.message-info {
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin: 0; /* Remove margin */
+  padding: 0; /* Ensure no padding */
+}
+
+.user-name, .agent-name {
+  font-weight: bold;
+}
+
+.timestamp {
+  color: gray;
+  margin-left: 4px; /* Adjust as needed */
+}
+
+.message-text {
+  margin-top: 10px; /* Add 5px padding between header and message text */
+  padding: 0; /* Remove any padding if present */
+}
+
+
+
+.otp-input-card {
+  background-color: #1f1f2e; /* Dark background color */
+  border-radius: 15px; /* Rounded corners */
+  padding: 40px; /* Increased padding for more space */
+  margin: 20px auto; /* Center the card horizontally */
+  width: 100%; /* Full width */
+  max-width: 600px; /* Restrict max width */
+  text-align: center; /* Center text inside */
+  color: white; /* Text color */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Soft shadow */
+}
+
+.otp-label {
+  margin-bottom: 10px; /* More space below label */
+  font-size: 22px; /* Slightly larger font */
+  font-weight: bold; /* Bold text */
+  margin-right: 350px; /* Space above the button */
+
+}
+
+.otp-inputs {
+  display: flex; /* Flex layout */
+  justify-content: space-evenly; /* Even spacing between inputs */
+  margin: 20px 0; /* Margin for spacing */
+  max-width: 100%; /* Maximum width for container */
+
+}
+
+.otp-inputs input {
+  width: 60px; /* Wider input fields */
+  height: 60px; /* Taller input fields */
+  text-align: center; /* Center text */
+  font-size: 24px; /* Larger font size */
+  border: 2px solid #4d4d5e; /* Slightly thicker border */
+  border-radius: 10px; /* Rounded corners */
+  background-color: #1f1f2e; /* Consistent background */
+  color: #ffffff; /* White text */
+  transition: border-color 0.3s ease; /* Smooth transition on focus */
+}
+
+.otp-inputs input:focus {
+  border-color: #7c5cfc; /* Highlight border on focus */
+  outline: none; /* No default outline */
+}
+
+.otp-submit-btn {
+  background: linear-gradient(90deg, #e66465, #9198e5); /* Gradient background */
+  color: white; /* White text */
+  border: none; /* No border */
+  padding: 15px 30px; /* Larger button */
+  border-radius: 30px; /* More rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease; /* Smooth hover transition */
+  font-size: 18px; /* Larger font size */
+  font-weight: bold; /* Bold text */
+  margin-top: 5px; /* Space above the button */
+  margin-right: 400px; /* Space above the button */
+}
+
+.otp-submit-btn:hover {
+  background-color: #6a4ee0; /* Darker background on hover */
+}
+.face-recognition-btn {
+  background-color: #f787f5;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.face-recognition-btn:hover {
+  background-color: #f787f5;
+}
+
+.application-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.application-options button {
+  background-color: #2d2d3e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.application-options button:hover {
+  background-color: #3d3d4e;
+}
+
+.chat-input-container {
+  display: flex;
+  background-color: #2d2d3e;
+  border-radius: 30px;
+  padding: 10px;
+  margin: 20px;
+}
+
+.chat-input {
+  flex: 1;
+  border: none;
+  background: none;
+  color: white;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.chat-input:focus {
+  outline: none;
+}
+
+.send-button,
+.attach-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.send-icon,
+.attach-icon {
+  width: 42px;
+  height: 42px;
+
+
+}
+
+.facial-auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.option-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.option-card, .video-verification-card {
+  background-color: #2d2d3e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.option-card:hover, .video-verification-card:hover {
+  background: linear-gradient(to right, #e189b0 0%, #6b1df5 100%) 
 }

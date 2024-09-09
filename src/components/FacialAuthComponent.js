@@ -27,29 +27,33 @@ const styles = {
         backdropFilter: 'blur(10px)',
     },
     webcamContainer: {
-        marginBottom: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        borderRadius: '30px',  // Ensures curved corners
+        overflow: 'hidden',    // Ensures content inside follows the curved border
+        border: '2px solid #e0e0e0', // Optional, for visible border
+        
     },
     instruction: {
-        fontSize: '20px',
-        marginBottom: '20px',
-        color: '#0066cc',
-        fontWeight: 'bold',
+        marginTop: '16px',
+        color: '#FFFFFF',
+        fontSize: '16px',
+        textAlign: 'center',
     },
     progressBar: {
         width: '100%',
         height: '8px',
-        backgroundColor: '#e0e0e0',
-        borderRadius: '10px',
-        marginBottom: '20px',
-        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+        backgroundColor: '#000', // A light background for the empty part of the bar
+        borderRadius: '4px',
+        overflow: 'hidden',
+        marginTop: '12px',
     },
     progress: {
         height: '100%',
-        backgroundColor: '#007bff',
-        borderRadius: '10px',
-        transition: 'width 0.5s ease-in-out',
+        background: 'linear-gradient(to right, #e189b0 0%, #6b1df5 100%)',
+        transition: 'width 0.4s ease', // Smooth transition as the progress bar fills
     },
-
 };
 const CircularWebcam = styled(Webcam)`
   width: 100%;
@@ -291,7 +295,7 @@ const FacialAuthComponent = ({ link, onClose, onComplete }) => {
     };
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div style={styles.webcamContainer}>
             <CircularWebcam
                 audio={false}
                 ref={webcamRef}
@@ -301,10 +305,17 @@ const FacialAuthComponent = ({ link, onClose, onComplete }) => {
                 <Heading>Facial Authentication</Heading> {/* Use the new styled component */}
                 {isAnalyzing && (
                     <>
-                        <Instruction>{instruction}</Instruction>
-                        <ProgressBar>
-                            <Progress style={{ width: `${progress}%` }} />
-                        </ProgressBar>
+                        <div style={styles.instructionContainer}>
+                                        <div style={styles.instruction}>{instruction}</div>
+
+                                    <div style={styles.progressBarContainer}>
+                                        <div style={styles.progressBar}>
+                                            <div style={{ ...styles.progress, width: `${progress}%` }}></div>
+                                        </div>        
+                                    </div>
+                            </div>
+
+                                    
                     </>
                 )}
                 {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
