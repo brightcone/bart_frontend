@@ -27,13 +27,10 @@ const styles = {
         backdropFilter: 'blur(10px)',
     },
     webcamContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        borderRadius: '30px',  // Ensures curved corners
+        padding: '40px',
+        borderRadius: '20px',  // Ensures curved corners
         overflow: 'hidden',    // Ensures content inside follows the curved border
-        border: '2px solid #e0e0e0', // Optional, for visible border
-        
+        backgroundColor: '#292929'
     },
     instruction: {
         marginTop: '16px',
@@ -43,11 +40,11 @@ const styles = {
     },
     progressBar: {
         width: '100%',
-        height: '8px',
+        height: '12px',
         backgroundColor: '#000', // A light background for the empty part of the bar
-        borderRadius: '4px',
+        borderRadius: '6px',
         overflow: 'hidden',
-        marginTop: '12px',
+        margin: '12px 0',
     },
     progress: {
         height: '100%',
@@ -56,24 +53,15 @@ const styles = {
     },
 };
 const CircularWebcam = styled(Webcam)`
-  width: 100%;
-  height: 100%;
+  width: 400px;
+  height: 300px;
   object-fit: cover;
+  border-radius: 20px;
 `;
 
 const OverlayContent = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   color: white;
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.5);
 `;
 
 // Adjust the `Instruction` styled component to move the text down a bit
@@ -286,6 +274,7 @@ const FacialAuthComponent = ({ link, onClose, onComplete }) => {
                 stopAnalysis();
                 handleAuthSuccess();
             } else {
+                stopAnalysis();
                 setError('Face not recognized. Please try again.');
             }
         } catch (err) {
@@ -302,23 +291,23 @@ const FacialAuthComponent = ({ link, onClose, onComplete }) => {
                 screenshotFormat="image/jpeg"
             />
             <OverlayContent>
-                <Heading>Facial Authentication</Heading> {/* Use the new styled component */}
+                {/* <Heading>Facial Authentication</Heading> */}
                 {isAnalyzing && (
                     <>
                         <div style={styles.instructionContainer}>
-                                        <div style={styles.instruction}>{instruction}</div>
+                            <div style={styles.instruction}>{instruction}</div>
 
-                                    <div style={styles.progressBarContainer}>
-                                        <div style={styles.progressBar}>
-                                            <div style={{ ...styles.progress, width: `${progress}%` }}></div>
-                                        </div>        
-                                    </div>
+                            <div style={styles.progressBarContainer}>
+                                <div style={styles.progressBar}>
+                                    <div style={{ ...styles.progress, width: `${progress}%` }}></div>
+                                </div>
                             </div>
+                        </div>
 
-                                    
+
                     </>
                 )}
-                {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+                {error && <div style={{ color: 'red', margin: '10px 0' }}>{error}</div>}
             </OverlayContent>
         </div>
     );

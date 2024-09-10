@@ -5,7 +5,6 @@ html {
   height: 100%;
   background-color: #000000;
   height: 100vh; /* Ensure the body takes the full viewport height */
-
 }
 
 .dashboard {
@@ -92,17 +91,13 @@ html {
   color: white;
   display: flex;
   align-items: center;
-
 }
 .nav a:hover {
   transform: scale(1.05); /* Slightly enlarge the template on hover */
   background-color: #333333;
   border-radius: 10px;
-
-
 }
 .nav li img {
-  
   width: 24px;
   height: 24px;
   border-radius: 20px;
@@ -158,17 +153,16 @@ html {
   margin: 0px;
   color: white;
   text-align: left;
-  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .footerdiv p.bart {
-  
   color: grey;
   text-align: left;
-  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -447,7 +441,6 @@ h3 {
   color: #ffffff;
 }
 
-
 .chat-container {
   flex: 1;
   display: flex;
@@ -482,6 +475,8 @@ h3 {
 .avatar {
   margin-right: 20px; /* Adjust this value to set the gap between the logo and the text */
   flex-shrink: 0;
+  width: 32px;
+  height: 32px;
 }
 
 .message-info {
@@ -495,7 +490,8 @@ h3 {
   padding: 0; /* Ensure no padding */
 }
 
-.user-name, .agent-name {
+.user-name,
+.agent-name {
   font-weight: bold;
 }
 
@@ -505,19 +501,17 @@ h3 {
 }
 
 .message-text {
-  margin-top: 10px; /* Add 5px padding between header and message text */
+  margin: 8px 0; /* Add 5px padding between header and message text */
   padding: 0; /* Remove any padding if present */
 }
-
-
 
 .otp-input-card {
   background-color: #1f1f2e; /* Dark background color */
   border-radius: 15px; /* Rounded corners */
-  padding: 40px; /* Increased padding for more space */
-  margin: 20px auto; /* Center the card horizontally */
+  padding: 20px; /* Increased padding for more space */
+  margin: 10px; /* Center the card horizontally */
   width: 100%; /* Full width */
-  max-width: 600px; /* Restrict max width */
+  max-width: 400px; /* Restrict max width */
   text-align: center; /* Center text inside */
   color: white; /* Text color */
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Soft shadow */
@@ -527,21 +521,18 @@ h3 {
   margin-bottom: 10px; /* More space below label */
   font-size: 22px; /* Slightly larger font */
   font-weight: bold; /* Bold text */
-  margin-right: 350px; /* Space above the button */
-
 }
 
 .otp-inputs {
   display: flex; /* Flex layout */
-  justify-content: space-evenly; /* Even spacing between inputs */
+  justify-content: space-between; /* Even spacing between inputs */
   margin: 20px 0; /* Margin for spacing */
   max-width: 100%; /* Maximum width for container */
-
 }
 
 .otp-inputs input {
-  width: 60px; /* Wider input fields */
-  height: 60px; /* Taller input fields */
+  width: 40px; /* Wider input fields */
+  height: 40px; /* Taller input fields */
   text-align: center; /* Center text */
   font-size: 24px; /* Larger font size */
   border: 2px solid #4d4d5e; /* Slightly thicker border */
@@ -557,7 +548,11 @@ h3 {
 }
 
 .otp-submit-btn {
-  background: linear-gradient(90deg, #e66465, #9198e5); /* Gradient background */
+  background: linear-gradient(
+    90deg,
+    #e66465,
+    #9198e5
+  ); /* Gradient background */
   color: white; /* White text */
   border: none; /* No border */
   padding: 15px 30px; /* Larger button */
@@ -642,8 +637,6 @@ h3 {
 .attach-icon {
   width: 42px;
   height: 42px;
-
-
 }
 
 .facial-auth-overlay {
@@ -665,7 +658,8 @@ h3 {
   margin-top: 10px;
 }
 
-.option-card, .video-verification-card {
+.option-card,
+.video-verification-card {
   background-color: #2d2d3e;
   color: white;
   border: none;
@@ -675,6 +669,49 @@ h3 {
   transition: background-color 0.3s ease;
 }
 
-.option-card:hover, .video-verification-card:hover {
-  background: linear-gradient(to right, #e189b0 0%, #6b1df5 100%) 
+.option-card:hover,
+.video-verification-card:hover {
+  background: linear-gradient(to right, #e189b0 0%, #6b1df5 100%);
+}
+
+.dot-container {
+  display: flex;
+  justify-content: space-between;
+  width: 30px; /* Reduce the width for closer spacing */
+}
+
+.dot {
+  width: 6px; /* Smaller dot size */
+  height: 6px;
+  background-color: #fff;
+  border-radius: 50%;
+  animation: bounce 0.8s infinite ease-in-out; /* Faster animation */
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px); /* Lower bounce height due to smaller size */
+  }
+}
+.gradient-bar {
+  margin: 0.5rem 0;
+  width: 5px;
+  border-radius: 0.5rem;
+  background: linear-gradient(to bottom, #f7977a, #a386dd);
 }

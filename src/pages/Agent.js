@@ -89,6 +89,9 @@ const Agent = () => {
                             )}
                             <span className="timestamp"> • {currentTime}</span>
                         </div>
+                        <div style={{display: 'flex', gap: '0.5rem'}}>
+                            {(message.showOptions || message.showOTP || message.showVideoVerification || message.ticketInfo) && <div className='gradient-bar'></div>}
+                            <div>
                         <div className="message-text">{message.text}</div>
                         {message.showOptions && (
                             <div className="option-cards">
@@ -127,6 +130,8 @@ const Agent = () => {
                                 time={message.ticketInfo.time}
                             />
                         )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -175,7 +180,7 @@ const Agent = () => {
 
         return (
             <div className="otp-input-card">
-                <div className="otp-label">Please enter below</div>
+                <div className="otp-label">Please enter OTP below</div>
                 <div className="otp-inputs">
                     {otp.map((value, index) => (
                         <input
@@ -214,10 +219,10 @@ const Agent = () => {
         </div>
     );
     const DotLoader = () => (
-        <div>
-            <span>•</span>
-            <span>•</span>
-            <span>•</span>
+        <div className="dot-container">
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
         </div>
     );
 
