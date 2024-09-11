@@ -20,6 +20,7 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import LogoutIcon from "../assets/Genie.svg";
+import JT from "../assets/Jiraticket.svg";
 import AWS from 'aws-sdk';
 
 const s3 = new AWS.S3();
@@ -446,7 +447,7 @@ const Agent = () => {
 
     // *****Initial message displaying *****//
     const handleMessageSend = async (input, displayMessage = true, actualOTP = null) => {
-        const initialMessage = "Hey BARTGenie, I want to reset my password";
+        const initialMessage = "Hey BARTGenie, I want to raise a Jira Ticket";
 
         if (!initialPromptProcessed) {
             setIsLoading(true);
@@ -729,8 +730,8 @@ const Agent = () => {
                 <div className="content-box">
                     <div className="chat-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                         <div style={{ display: 'flex', alignItems: 'center', flexGrow: 1, justifyContent: 'center' }}>
-                            <img src={Lock} style={{ marginRight: '10px', borderRight: '1px solid grey', borderBottom: '1px solid grey', borderRadius: '5px' }} />
-                            <h2 style={{ fontFamily: 'sans-serif', fontSize: '18px', textAlign: 'center', color: 'grey', padding: '10px' }}>Password Reset</h2>
+                            <img src={JT} style={{ marginRight: '10px', borderRight: '1px solid grey', borderBottom: '1px solid grey', borderRadius: '5px' }} />
+                            <h2 style={{ fontFamily: 'sans-serif', fontSize: '18px', textAlign: 'center', color: 'grey', padding: '10px' }}>Raise a Ticket</h2>
                         </div>
 
                         <div className="logout-container" style={{ marginLeft: 'auto' }}>
@@ -785,169 +786,3 @@ const Agent = () => {
 };
 
 export default Agent;
-
-    // ****Initial Input message will not be displayed using the below code:******
-    // const handleMessageSend = async (input, displayMessage = true, actualOTP = null) => {
-    //     const initialMessage = "Hey BARTGenie, reset my password";
-    
-    //     if (!initialPromptProcessed) {
-    //         setIsLoading(true);
-    //         try {
-    //             const client = new BedrockAgentRuntimeClient({
-    //                 region: "us-east-1",
-    //                 credentials: {
-    //                     accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-    //                     secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
-    //                 }
-    //             });
-    
-    //             const command = new InvokeAgentCommand({
-    //                 agentId: "U3YHVQFHVA",
-    //                 agentAliasId: "FS3BRWFZ15",
-    //                 sessionId: sessionId,
-    //                 inputText: initialMessage
-    //             });
-    
-    //             const response = await client.send(command);
-    //             console.log('API Response:', response);
-    
-    //             let fullResponse = '';
-    //             const decoder = new TextDecoder('utf-8');
-    
-    //             if (response.completion) {
-    //                 for await (const event of response.completion) {
-    //                     if (event.chunk && event.chunk.bytes) {
-    //                         const byteArray = new Uint8Array(event.chunk.bytes);
-    //                         fullResponse += decoder.decode(byteArray, { stream: true });
-    //                     }
-    //                 }
-    
-    //                 await processAndDisplayResponse(fullResponse, true);
-    //                 setInitialPromptProcessed(true); 
-    //             } else {
-    //                 console.error('Unexpected API response structure:', response);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error:", error);
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //         return; 
-    //     }
-    
-        
-    //     if (!displayMessage) {
-    //         if (initialPromptProcessed) {
-    //             return;
-    //         }
-    
-    //         setIsLoading(true);
-    //         try {
-    //             const client = new BedrockAgentRuntimeClient({
-    //                 region: "us-east-1",
-    //                 credentials: {
-    //                     accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-    //                     secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
-    //                 }
-    //             });
-    
-    //             const command = new InvokeAgentCommand({
-    //                 agentId: "U3YHVQFHVA",
-    //                 agentAliasId: "FS3BRWFZ15",
-    //                 sessionId: sessionId,
-    //                 inputText: input
-    //             });
-    
-    //             const response = await client.send(command);
-    //             console.log('API Response:', response);
-    
-    //             let fullResponse = '';
-    //             const decoder = new TextDecoder('utf-8');
-    
-    //             if (response.completion) {
-    //                 for await (const event of response.completion) {
-    //                     if (event.chunk && event.chunk.bytes) {
-    //                         const byteArray = new Uint8Array(event.chunk.bytes);
-    //                         fullResponse += decoder.decode(byteArray, { stream: true });
-    //                     }
-    //                 }
-    
-    //                 await processAndDisplayResponse(fullResponse, true);
-    //                 setInitialPromptProcessed(true);
-    //             } else {
-    //                 console.error('Unexpected API response structure:', response);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error:", error);
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //         return;
-    //     }
-    
-    //     if (input === "User verified successfully." && hasSentVerificationMessage) {
-    //         return;
-    //     }
-    
-    //     setIsLoading(true);
-    //     try {
-    //         const newMessage = { text: actualOTP ? "Done!" : input, isUserMessage: true };
-    //         setMessages(prevMessages => [
-    //             ...prevMessages,
-    //             newMessage,
-    //             { text: <DotLoader />, isUserMessage: false, isLoading: true }
-    //         ]);
-    //         await storeMessage(input, true);
-    
-    //         const client = new BedrockAgentRuntimeClient({
-    //             region: "us-east-1",
-    //             credentials: {
-    //                 accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-    //                 secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
-    //             }
-    //         });
-    
-    //         const command = new InvokeAgentCommand({
-    //             agentId: "U3YHVQFHVA",
-    //             agentAliasId: "FS3BRWFZ15",
-    //             sessionId: sessionId,
-    //             inputText: actualOTP ? input : newMessage.text
-    //         });
-    
-    //         const response = await client.send(command);
-    //         console.log('API Response:', response);
-    
-    //         let fullResponse = '';
-    //         const decoder = new TextDecoder('utf-8');
-    
-    //         if (response.completion) {
-    //             for await (const event of response.completion) {
-    //                 if (event.chunk && event.chunk.bytes) {
-    //                     try {
-    //                         const byteArray = new Uint8Array(event.chunk.bytes);
-    //                         const decodedString = decoder.decode(byteArray, { stream: true });
-    //                         fullResponse += decodedString;
-    //                     } catch (decodeError) {
-    //                         console.error("Error decoding chunk:", decodeError);
-    //                     }
-    //                 }
-    //             }
-    
-    //             await typingEffect(fullResponse);
-    //             await processAndDisplayResponse(fullResponse, true);
-    //         } else {
-    //             console.error('Unexpected API response structure:', response);
-    //         }
-    //     } catch (error) {
-    //         console.error("Error:", error);
-    //         const errorMessage = "An error occurred while fetching the response.";
-    
-    //         setMessages(prevMessages => {
-    //             const newMessages = prevMessages.slice(0, -1);
-    //             newMessages.push({ text: errorMessage, isUserMessage: false });
-    //             return newMessages;
-    //         });
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };

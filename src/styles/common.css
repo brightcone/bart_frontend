@@ -543,8 +543,8 @@ h3 {
   );
   color: white; /* White text */
   border: 1px solid #404040;
-  padding: 15px 30px; /* Larger button */
-  border-radius: 15px; /* More rounded corners */
+  padding: 10px 20px; /* Larger button */
+  border-radius: 10px; /* More rounded corners */
   cursor: pointer; /* Pointer cursor on hover */
   transition: background-color 0.3s ease; /* Smooth hover transition */
   font-size: 18px; /* Larger font size */
@@ -664,6 +664,7 @@ h3 {
   background: linear-gradient(to right, #e189b0 0%, #6b1df5 100%);
 }
 
+
 .dot-container {
   display: flex;
   justify-content: space-between;
@@ -706,4 +707,17 @@ h3 {
   background: linear-gradient(to bottom, #6b1df5 0%, #e189b0 100%);
   height: auto;
 
+}
+.avatar {
+  width: 35px; /* Adjust the width as needed */
+  height: 35px; /* Adjust the height as needed */
+  border-radius: 50%; /* This makes the image circular */
+  object-fit: cover; /* This ensures the image covers the circle without distortion */
+}
+.all-templates-header {
+  text-align: center;
+  font-size: 24px;
+  color: white;
+  margin-bottom: 0px;
+  margin-top: 50px;
 }
