@@ -164,7 +164,9 @@ const Agent = () => {
                             ) : (
                                 <span className="agent-name">BART Genie</span>
                             )}
-                            <span style={{ paddingLeft: '5px' }}>*</span>
+                           <span style={{ display: 'inline-block', width: '3px', height: '3px', backgroundColor: 'white', borderRadius: '100%', paddingLeft: '0.5px', marginLeft: '5px'
+}}></span>
+
                             <span className="timestamp" style={{ fontSize: '14px' }}>
                                 {message.timestamp || ' '} {/* Check if timestamp is available */}
                             </span>

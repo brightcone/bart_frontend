@@ -10,7 +10,7 @@ import Ticket from './pages/Ticket';
 import Search from './pages/Search';
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   return (
     <Router>

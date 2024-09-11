@@ -104,20 +104,14 @@ const Heading = styled.h2`
   z-index: 10; /* Ensure the heading is above other elements */
 `;
 const GifContainer = styled.div`
-        position: 'relative',
-        zIndex: 2,
-        padding: '40px 30px',
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        borderRadius: '15px',
-        boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)',
-        backdropFilter: 'blur(10px)',
+    border-radius: 10px;
 `;
 
 const GifImage = styled.img`
-width:20%;
-height:20%;
-align:center;
-  object-fit: cover;
+width: 400px;
+height: 300px;
+border-radius: 15px;
+object-fit: fill;
 `;
 
 const WebcamContainer = styled.div`
@@ -335,11 +329,11 @@ const FacialAuthComponent = ({ link, onClose, onComplete }) => {
 
     return (
         <div style={styles.webcamContainer}>
-            <CircularWebcam
+            {!showGif && <CircularWebcam
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-            />
+            />}
             <OverlayContent>
                 {isAnalyzing && !showGif && (
                     <>
