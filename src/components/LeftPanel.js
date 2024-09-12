@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 
 import { Box } from '@mui/material';
 // import Home from "../assets/house.svg";
-import BART from "../assets/image 45.svg";
+import BART from "../assets/trainLogo.png";
 import Profile from "../assets/profile.svg";
 import arrow from "../assets/arrow-up-right.svg";
 const menuItems = [

@@ -1,3 +1,4 @@
+@import url("stylesheet.css");
 body,
 html {
   margin: 0;
@@ -7,6 +8,10 @@ html {
   height: 100vh; /* Ensure the body takes the full viewport height */
 }
 
+.login-font {
+  font-family: 'Pockota Light';
+  text-decoration: none;
+}
 .dashboard {
   height: 100vh;
   background-color: #000000;
@@ -14,7 +19,7 @@ html {
   display: flex;
 }
 .sidebar {
-  width: 240px;
+  width: 265px;
   background-color: #000000;
   padding: 20px;
   color: white;
@@ -136,7 +141,7 @@ html {
   padding-left: 0%;
 }
 .footerdiv img {
-  width: 35px;
+  width: 68px;
   height: 50px;
   margin-right: 10px;
   background-color: white;
@@ -191,14 +196,14 @@ html {
   margin-top: 10px;
   margin-right: 20px;
   margin-bottom: 10px;
-  margin-left: 20px;
+  margin-left: 28px;
   
 }
 
 .content-box {
   padding: 20px;
   border-radius: 30px;
-  height: 82vh;
+  height: 98vh;
   overflow-y: auto;
 }
 .suggested-templates {
@@ -275,7 +280,7 @@ html {
   bottom: 25px;
   left: 25px; /* Default left position when sidebar is expanded */
   right: 25px; /* Right side remains fixed */
-  margin: 0;
+  margin-top: 121px;
   transition: left 0.7s ease; /* Smooth transition for left property */
 }
 

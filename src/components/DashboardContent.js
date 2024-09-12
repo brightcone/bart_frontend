@@ -122,7 +122,7 @@ const DashboardContent = () => {
                 </div>
             </div>
 
-            <div className="chat" style={{ position: 'absolute' }}>
+            <div className="chat">
                 <img src={Icon7} alt="Icon 7" />
                 
                 <input type="text" placeholder="Ask BART Genie" />

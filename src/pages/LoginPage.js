@@ -86,6 +86,7 @@ const styles = {
         color: '#FFFFFF',
         fontSize: '16px',
         boxSizing: 'border-box',
+        fontSize: "larger"
     },
     passwordToggle: {
         position: 'absolute',
@@ -182,7 +183,7 @@ const styles = {
     },
     Genie: {
         width: '60px',
-        padding:'30px'
+        padding:'10px'
 
       
     },
@@ -489,21 +490,21 @@ const LoginPage = ({ setIsAuthenticated }) => {
             <div style={styles.loginContainer}>
             <div style={styles.loginBox}>
                  <img src={Genie} alt="Genie Logo" style={styles.Genie} />
-                <h3>Log in</h3>
+                <h2 className='login-font'>Log in</h2>
                 <div style={styles.switchContainer}>
                     <button
                         style={{ ...styles.switchButton, ...(isPhotoLogin ? {} : styles.switchActive) }}
                         onClick={() => handleSwitch('email')}
                     >
                         <img src={Email} alt="EmailLogin" style={styles.trainLogo} />
-                        via Email
+                        Email
                     </button>
                     <button
                         style={{ ...styles.switchButton, ...(isPhotoLogin ? styles.switchActive : {}) }}
                         onClick={() => handleSwitch('photo')}
                     >   
                         <img src={Photo} alt="PhotoLogin" style={styles.trainLogo} />
-                        via Video
+                        Video
                     </button>
                 </div>
                 {isPhotoLogin ? (
