@@ -1,0 +1,156 @@
+@font-face {
+    font-family: 'Pockota';
+    src: url('../assets/font/Pockota-BlackItalic.eot');
+    src: local('Pockota Black Italic'), local('Pockota-BlackItalic'),
+        url('../assets/font/Pockota-BlackItalic.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-BlackItalic.woff2') format('woff2'),
+        url('../assets/font/Pockota-BlackItalic.woff') format('woff'),
+        url('../assets/font/Pockota-BlackItalic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota';
+    src: url('../assets/font/Pockota-Black.eot');
+    src: local('Pockota Black'), local('Pockota-Black'),
+        url('../assets/font/Pockota-Black.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-Black.woff2') format('woff2'),
+        url('../assets/font/Pockota-Black.woff') format('woff'),
+        url('../assets/font/Pockota-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota';
+    src: url('../assets/font/Pockota-Regular.eot');
+    src: local('Pockota'), local('Pockota-Regular'),
+        url('../assets/font/Pockota-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-Regular.woff2') format('woff2'),
+        url('../assets/font/Pockota-Regular.woff') format('woff'),
+        url('../assets/font/Pockota-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota';
+    src: url('../assets/font/Pockota-BoldItalic.eot');
+    src: local('Pockota Bold Italic'), local('Pockota-BoldItalic'),
+        url('../assets/font/Pockota-BoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-BoldItalic.woff2') format('woff2'),
+        url('../assets/font/Pockota-BoldItalic.woff') format('woff'),
+        url('../assets/font/Pockota-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota';
+    src: url('../assets/font/Pockota-LightItalic.eot');
+    src: local('Pockota Light Italic'), local('Pockota-LightItalic'),
+        url('../assets/font/Pockota-LightItalic.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-LightItalic.woff2') format('woff2'),
+        url('../assets/font/Pockota-LightItalic.woff') format('woff'),
+        url('../assets/font/Pockota-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota Extra';
+    src: url('../assets/font/Pockota-ExtraBold.eot');
+    src: local('Pockota Extra Bold'), local('Pockota-ExtraBold'),
+        url('../assets/font/Pockota-ExtraBold.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-ExtraBold.woff2') format('woff2'),
+        url('../assets/font/Pockota-ExtraBold.woff') format('woff'),
+        url('../assets/font/Pockota-ExtraBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota Extra';
+    src: url('../assets/font/Pockota-ExtraBoldItalic.eot');
+    src: local('Pockota Extra Bold Italic'), local('Pockota-ExtraBoldItalic'),
+        url('../assets/font/Pockota-ExtraBoldItalic.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-ExtraBoldItalic.woff2') format('woff2'),
+        url('../assets/font/Pockota-ExtraBoldItalic.woff') format('woff'),
+        url('../assets/font/Pockota-ExtraBoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota';
+    src: url('../assets/font/Pockota-Bold.eot');
+    src: local('Pockota Bold'), local('Pockota-Bold'),
+        url('../assets/font/Pockota-Bold.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-Bold.woff2') format('woff2'),
+        url('../assets/font/Pockota-Bold.woff') format('woff'),
+        url('../assets/font/Pockota-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota';
+    src: url('../assets/font/Pockota-Medium.eot');
+    src: local('Pockota Medium'), local('Pockota-Medium'),
+        url('../assets/font/Pockota-Medium.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-Medium.woff2') format('woff2'),
+        url('../assets/font/Pockota-Medium.woff') format('woff'),
+        url('../assets/font/Pockota-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota';
+    src: url('../assets/font/Pockota-MediumItalic.eot');
+    src: local('Pockota Medium Italic'), local('Pockota-MediumItalic'),
+        url('../assets/font/Pockota-MediumItalic.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-MediumItalic.woff2') format('woff2'),
+        url('../assets/font/Pockota-MediumItalic.woff') format('woff'),
+        url('../assets/font/Pockota-MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota';
+    src: url('../assets/font/Pockota-Italic.eot');
+    src: local('Pockota Italic'), local('Pockota-Italic'),
+        url('../assets/font/Pockota-Italic.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-Italic.woff2') format('woff2'),
+        url('../assets/font/Pockota-Italic.woff') format('woff'),
+        url('../assets/font/Pockota-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pockota Light';
+    src: url('../assets/font/Pockota-Light.eot');
+    src: local('Pockota Light'), local('Pockota-Light'),
+        url('../assets/font/Pockota-Light.eot?#iefix') format('embedded-opentype'),
+        url('../assets/font/Pockota-Light.woff2') format('woff2'),
+        url('../assets/font/Pockota-Light.woff') format('woff'),
+        url('../assets/font/Pockota-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
