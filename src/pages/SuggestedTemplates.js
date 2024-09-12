@@ -130,12 +130,15 @@ const SuggestedTemplates = () => {
                                 onClick={() => handleTemplateClick("/jira_agent")}
                             >
                                 <img src={Jira} alt="Ticket" className="template-icon" />
-                                <p>Raise a Jira Ticket for complicated issues</p>
+                                <p>Raise a Jira Ticket for complicated issues.</p>
                             </div>
-                            <a href="equipment-maintenance-url" className="template">
+                            <div
+                                className="template"
+                                onClick={() => handleTemplateClick("/knowledgebase")}
+                            >
                                 <img src={DB} alt="Database" className="template-icon" />
-                                <p>Connect to the Knowledge base for internal queries</p>
-                            </a>
+                                <p>Connect to the Knowledge base for internal queries.</p>
+                            </div>
                             <a href="equipment-maintenance-url" className="template">
                                 <img src={SE} alt="SendEmail" className="template-icon" />
                                 <p>Draft and send E-mails quickly.</p>

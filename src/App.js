@@ -10,6 +10,7 @@ import Ticket from './pages/Ticket';
 import Search from './pages/Search';
 import SuggestedTemplates from './pages/SuggestedTemplates';
 import Jira_Agent from './pages/Jira_Agent';
+import Knowledgebase from './pages/Knowledgebase';
 import { UserProvider } from './components/UserContext'; 
 
 const App = () => {
@@ -30,6 +31,7 @@ const App = () => {
           <Route path="/settings" element={isAuthenticated ? <Settings /> : <Navigate to="/agent" />} />
           <Route path="/templates" element={isAuthenticated ? <SuggestedTemplates /> : <Navigate to="/jira_agent" />} />
           <Route path="/jira_agent" element={isAuthenticated ? <Jira_Agent /> : <Navigate to="/login" />} />
+          <Route path="/Knowledgebase" element={isAuthenticated ? <Knowledgebase /> : <Navigate to="/login" />} />
         </Routes>
       </Router>
     </UserProvider>

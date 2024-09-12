@@ -30,6 +30,7 @@ const styles = {
         borderRadius: '30px',
         fontSize: '16px',
         backgroundColor: 'transparent',
+        fontSize: larger
     },
     chatButton: {
         background: 'none', // No background for attach button

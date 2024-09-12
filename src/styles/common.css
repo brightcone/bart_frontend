@@ -15,7 +15,6 @@ html {
 }
 .sidebar {
   width: 240px;
-  height: 100vh;
   background-color: #000000;
   padding: 20px;
   color: white;
@@ -185,19 +184,21 @@ html {
   box-sizing: border-box; /* Ensures padding and border are included in the width */
   overflow-x: auto; /* Prevents horizontal overflow */
   overflow-y: auto; /* Allows vertical scrolling if needed */
-}
-
-.content-box {
+  height: 98vh;
   background-color: #282828;
   background: linear-gradient(to right, #202020 0%, #171852 100%);
   border: 2px solid #282828;
-  padding: 20px;
   margin-top: 10px;
   margin-right: 20px;
   margin-bottom: 10px;
   margin-left: 20px;
+  
+}
+
+.content-box {
+  padding: 20px;
   border-radius: 30px;
-  height: 100vh;
+  height: 82vh;
   overflow-y: auto;
 }
 .suggested-templates {
@@ -639,19 +640,12 @@ h3 {
   align-items: center;
   z-index: 1000;
 }
-.option-cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-}
 
-.option-card,
-.video-verification-card {
+.option-card,.video-verification-card {
   display: flex;
   margin-bottom: 10px;
   background-color: #2d2d3e;
-  color: white;
+  color: rgb(252, 246, 246);
   border: 1px solid #404040;
   padding: 10px 20px;
   border-radius: 5px;
@@ -659,9 +653,25 @@ h3 {
   transition: background-color 0.3s ease;
 }
 
-.option-card:hover,
-.video-verification-card:hover {
+.option-card:hover,.video-verification-card:hover {
   background: linear-gradient(to right, #e189b0 0%, #6b1df5 100%);
+}
+
+.option-card.selected, .video-verification-card.selected {
+  background: linear-gradient(to right, #e189b0 0%, #6b1df5 100%) !important;
+}
+
+/* Additional specificity to ensure selected styles persist on hover */
+.option-card.selected:hover, .video-verification-card.selected:hover {
+  background: linear-gradient(to right, #e189b0 0%, #6b1df5 100%) !important;
+}
+
+.option-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  
 }
 
 
