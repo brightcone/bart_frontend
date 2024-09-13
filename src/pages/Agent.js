@@ -130,7 +130,8 @@ const Agent = () => {
 
 
     const ChatMessage = ({ message, userName, messages }) => {
-        const { profilePhoto, fullName } = useContext(UserContext);
+        const profilePhoto = localStorage.getItem("profilePhoto");
+        const fullName = localStorage.getItem("fullName");
         //console.log(`Rendering ChatMessage with Timestamp:`, message.timestamp); // Debug to check the timestamp
         const messagesEndRef = useRef(null);
         const chatContainerRef = useRef(null);
