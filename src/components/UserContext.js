@@ -12,10 +12,6 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         const fetchUserProfile = async () => {
             const usernameFromStorage = localStorage.getItem('username');
-            if (!usernameFromStorage) {
-                return;
-            }
-
             const decodedUsername = decodeURIComponent(usernameFromStorage);
             setUserName(decodedUsername);
 
