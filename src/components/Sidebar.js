@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import profileImage from '../assets/image 44.svg';
-import trainLogo from '../assets/image 45.svg';
+import trainLogo from '../assets/trainLogo.png';
 import SearchSVG from '../assets/magnifying-glass.svg'; // Example SVGs
 import TemplatesSVG from '../assets/circles-four.svg';
 import HistorySVG from '../assets/clock-counter-clockwise.svg';
@@ -96,7 +96,7 @@ const styles = {
   },
   trainLogo: {
     width: '40px',
-    height: '40px',
+    height: '54px',
     marginRight: '10px',
   },
 };

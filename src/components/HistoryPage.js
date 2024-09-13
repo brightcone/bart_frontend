@@ -193,6 +193,8 @@ const HistoryPage = () => {
         const command = new InvokeAgentCommand({
             agentId: "U3YHVQFHVA",
             agentAliasId: "GX5MSL1QQU",
+            // agentId: "R3DWZWXULB",
+            // agentAliasId: "SPVPOKBWEM",
             sessionId: sessionId,
             inputText: input
         });
