@@ -2,9 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AWS from 'aws-sdk';
 import Webcam from 'react-webcam';
-// import trainLogo from '../assets/image 45.svg';
-// import background from '../assets/b1.jpg';
-import successIcon from '../assets/success-icon.png';
 import backgroundImage from '../assets/sparkles.svg';
 import Genie from '../assets/Genie.svg';
 import Photo from '../assets/camera.svg';
@@ -13,6 +10,8 @@ import Eye from '../assets/eye.svg';
 import { Buffer } from 'buffer';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import BART from '../videos/BART.mp4';
 // Configure AWS SDK
 AWS.config.update({
     accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
@@ -192,8 +191,8 @@ const styles = {
 };
 
 const LoginPage = ({ setIsAuthenticated }) => {
-    const [email, setEmail] = useState('prashanth@brightcone.ai');
-    const [password, setPassword] = useState('Yanthraa@123');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [isPhotoLogin, setIsPhotoLogin] = useState(false);
     const [error, setError] = useState('');
     const [loginSuccess, setLoginSuccess] = useState(false);
@@ -479,14 +478,15 @@ const LoginPage = ({ setIsAuthenticated }) => {
         <div style={styles.container}>
 
         <div style={styles.videoContainer}>
-                        <video
-                            style={styles.video}
-                            src='/videos/BART.mp4'
-                            autoPlay
-                            muted
-                            loop
-                        ></video>
-            </div>
+            <video
+                style={styles.video}
+                autoPlay
+                muted
+                loop
+            >
+                <source src={BART} type='video/mp4'></source>
+            </video>
+        </div>
             <div style={styles.loginContainer}>
             <div style={styles.loginBox}>
                  <img src={Genie} alt="Genie Logo" style={styles.Genie} />

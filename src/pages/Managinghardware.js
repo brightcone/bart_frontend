@@ -150,8 +150,9 @@ const Agent = () => {
 
 
     const ChatMessage = ({ message }) => {
-        const { userName, profilePhoto, fullName } = useContext(UserContext);
- 
+        const userName = localStorage.getItem("username");
+        const profilePhoto = localStorage.getItem("profilePhoto");
+        const fullName = localStorage.getItem("fullName");
     
         return (
             <div className="chat-message">

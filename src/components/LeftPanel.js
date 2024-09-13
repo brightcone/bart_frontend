@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import AWS from 'aws-sdk';
 import { ChevronLeft, ChevronRight, GridViewOutlined, HomeOutlined, StickyNote2Outlined } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
@@ -16,6 +16,7 @@ import { Box } from '@mui/material';
 // import Home from "../assets/house.svg";
 import BART from "../assets/BART.svg";
 import arrow from "../assets/arrow-up-right.svg";
+
 const menuItems = [
     { id: 1, name: 'Home', icon: <HomeOutlined />, path: '/' },
     { id: 2, name: 'New Chat', icon: <AddIcon />, path: '/new-chat' },
@@ -49,12 +50,9 @@ const LeftPanel = () => {
     useEffect(() => {
         const fetchUserProfile = async () => {
             const usernameFromStorage = localStorage.getItem('username');
-            if (!usernameFromStorage) {
-                return;
-            }
-
+        
             const decodedUsername = decodeURIComponent(usernameFromStorage);
-            setUserName(decodedUsername);
+            setUserName(()=> decodedUsername);
 
             try {
                 // Fetch user data from JSON file
@@ -65,8 +63,8 @@ const LeftPanel = () => {
                 const userData = await s3.getObject(userParams).promise();
                 const userJson = JSON.parse(userData.Body.toString('utf-8'));
                 const fullNameFromData = userJson.fullName || 'Default Name';
-                setFullName(fullNameFromData);
-
+                setFullName(() => fullNameFromData);
+                localStorage.setItem('fullName', fullNameFromData);
                 // Construct profile photo URL
                const profilePhotoUrl = `https://${process.env.REACT_APP_S3_BUCKET}.s3.${process.env.REACT_APP_AWS_REGION}.amazonaws.com/facialdata/profile_images/${usernameFromStorage}.jpg`;
 
@@ -76,7 +74,9 @@ const LeftPanel = () => {
                         Bucket: process.env.REACT_APP_S3_BUCKET,
                         Key: `facialdata/profile_images/${usernameFromStorage}.jpg`
                     }).promise();
-                    setProfilePhoto(profilePhotoUrl);
+                    setProfilePhoto(() => profilePhotoUrl);
+                    localStorage.setItem('profilePhoto', profilePhotoUrl);
+                    
                 } catch (error) {
                     if (error.code === 'NotFound') {
                         console.log('Profile photo not found. Using default image.');
