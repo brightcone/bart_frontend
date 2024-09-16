@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import { BedrockAgentRuntimeClient, InvokeAgentCommand } from "@aws-sdk/client-bedrock-agent-runtime";
@@ -11,7 +11,7 @@ import DashboardContent from "../components/AgentContent";
 import Icon8 from "../assets/arrow-circle-up.svg";
 import Icon7 from "../assets/plus-circle.svg";
 import ChatLogo from "../assets/Genie.svg";
-import Profile from "../assets/profile.svg"; 
+import Profile from "../assets/profile.svg"; // Import the Profile logo
 import Lock from "../assets/lock.svg";
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
@@ -126,7 +126,9 @@ const Agent = () => {
         console.log(`Message Created:`, message); // Debug statement to verify message creation
         return message;
     };
- 
+
+
+
     const ChatMessage = ({ message, userName, messages }) => {
         const profilePhoto = localStorage.getItem("profilePhoto");
         const fullName = localStorage.getItem("fullName");
@@ -628,10 +630,9 @@ const Agent = () => {
             await storeMessage(fullResponse, false);
         }
     };
-
     const ChatInput = ({ onSend, isLoading, isOTPActive }) => {
         const [input, setInput] = useState('');
-
+    
         const handleSubmit = (e) => {
             e.preventDefault();
             if (!isLoading && input.trim()) {
@@ -639,28 +640,44 @@ const Agent = () => {
                 setInput('');
             }
         };
-
+    
         const handleKeyDown = (e) => {
-            if (e.key === 'Enter' && e.shiftKey) {
-                return; 
-            } else if (e.key === 'Enter') {
-                e.preventDefault(); 
-                handleSubmit(e); 
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
             }
-            
-
         };
-
+    
+        const handleChange = (e) => {
+            setInput(e.target.value);
+        };
+    
         return (
             <div className="chat">
                 <img src={Icon7} alt="Icon 7" />
-                <input
-                    type="text"
-                    placeholder="Ask BART Genie"
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
+                <textarea
+                        placeholder="Ask BART Genie"
+                        value={input}
+                        onChange={handleChange}
+                        onKeyDown={handleKeyDown}
+                        rows={1}
+                        style={{
+                            flex: 1, 
+                            padding: '10px', 
+                            marginLeft: '7px', 
+                            marginRight: '7px', 
+                            resize: 'none',
+                            border: 'none',
+                            background: 'none',
+                            color: 'white',
+                            fontSize: '16px', 
+                            overflowY: 'scroll', 
+                            scrollbarWidth: 'none', 
+                            outline:'none',
+                            fontFamily: 'sans-serif',
+                        }}
+                        className="hidden-scrollbar"
+                    />
 
                 <img
                     src={Icon8}
@@ -672,7 +689,8 @@ const Agent = () => {
             </div>
         );
     };
-
+    
+    
     return (
         <div className="dashboard">
             <LeftPanel />
