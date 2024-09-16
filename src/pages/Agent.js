@@ -630,10 +630,9 @@ const Agent = () => {
             await storeMessage(fullResponse, false);
         }
     };
-
     const ChatInput = ({ onSend, isLoading, isOTPActive }) => {
         const [input, setInput] = useState('');
-
+    
         const handleSubmit = (e) => {
             e.preventDefault();
             if (!isLoading && input.trim()) {
@@ -641,24 +640,43 @@ const Agent = () => {
                 setInput('');
             }
         };
-
         const handleKeyDown = (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 handleSubmit(e);
             }
         };
-
+    
+        const handleChange = (e) => {
+            setInput(e.target.value);
+        };
+    
         return (
             <div className="chat">
                 <img src={Icon7} alt="Icon 7" />
-                <input
-                    type="text"
-                    placeholder="Ask BART Genie"
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
+                <textarea
+                        placeholder="Ask BART Genie"
+                        value={input}
+                        onChange={handleChange}
+                        onKeyDown={handleKeyDown}
+                        rows={1}
+                        style={{
+                            flex: 1, 
+                            padding: '10px', 
+                            marginLeft: '7px', 
+                            marginRight: '7px', 
+                            resize: 'none',
+                            border: 'none',
+                            background: 'none',
+                            color: 'white',
+                            fontSize: '16px', 
+                            overflowY: 'scroll', 
+                            scrollbarWidth: 'none', 
+                            outline:'none',
+                            fontFamily: 'sans-serif',
+                        }}
+                        className="hidden-scrollbar"
+                    />
 
                 <img
                     src={Icon8}
@@ -670,7 +688,8 @@ const Agent = () => {
             </div>
         );
     };
-
+    
+    
     return (
         <div className="dashboard">
             <LeftPanel />

@@ -631,6 +631,11 @@ h3 {
   outline: none;
 }
 
+
+.hidden-scrollbar::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
+}
+
 .send-button,
 .attach-button {
   background: none;
@@ -910,5 +915,4 @@ h3 {
 .scrollmessages::-webkit-scrollbar-thumb:hover {
   background-color: #555; 
 }
-
 
