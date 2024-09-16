@@ -17,9 +17,6 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import LogoutIcon from "../assets/Genie.svg";
-import UserContext from '../components/UserContext';
-
-
 
 const Agent = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -36,10 +33,9 @@ const Agent = () => {
     const [hasSentVerificationMessage, setHasSentVerificationMessage] = useState(false);
     const [initialPromptProcessed, setInitialPromptProcessed] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
-
-
     const [showLogoutButton, setShowLogoutButton] = useState(false);
-
+    const [scrollStatus, setScrollStatus] = useState(false);
+    
     const navigate = useNavigate();
     const handleTemplateClick = (path) => {
         navigate(path);
@@ -89,10 +85,6 @@ const Agent = () => {
             hasSentInitialMessage.current = true;
         }
     }, [sessionId, initialPrompt]);
-
-    useEffect(() => {
-        endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
 
     useEffect(() => {
         if (isVerificationCompleted && !hasSentVerificationMessage) {
@@ -147,8 +139,8 @@ const Agent = () => {
         const handleScroll = () => {
             if (!chatContainerRef.current) return;
             const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-            const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50; // 50px threshold
-            setHasScrolled(!isAtBottom); // If the user is not at the bottom, they've scrolled
+            const isAtBottom = scrollHeight - scrollTop <= clientHeight + 100; // 50px threshold
+            setHasScrolled(() => !isAtBottom); // If the user is not at the bottom, they've scrolled
         };
     
         useEffect(() => {
@@ -165,8 +157,11 @@ const Agent = () => {
     
         // Automatically scroll when new messages are added if the user is at/near the bottom
         useEffect(() => {
+            if(!scrollStatus) {
+                return;
+            }
             scrollToBottom();
-        }, [messages]);
+        }, [scrollStatus]);
     
         return (
             <div ref={chatContainerRef} className="chat-message-container" style={{ overflowY: 'auto', maxHeight: '500px' }}>
@@ -372,6 +367,7 @@ const Agent = () => {
     };
 
     const typingEffect = (messageText, delay = 50) => {
+        setScrollStatus(false);
         return new Promise(resolve => {
             let currentIndex = 0;
             let interval = setInterval(() => {
@@ -387,6 +383,7 @@ const Agent = () => {
                     });
                     currentIndex++;
                 } else {
+                    setScrollStatus(true);
                     clearInterval(interval);
                     resolve();
                 }
@@ -725,7 +722,8 @@ const Agent = () => {
                         </div>
                     </div>
 
-                    <div className='scrollmessages' style={{ paddingBottom: '80px', color: 'white', overflow: 'auto', maxHeight:'75%' }}>
+                    <div className='scrollmessages'
+                        style={{ paddingBottom: '10px', color: 'white', overflow: 'auto', maxHeight:'75%' }}>
                         {messages.map((message, index) => (
                             <ChatMessage key={index} message={message} />
                         ))}
