@@ -372,12 +372,13 @@ const History = () => {
     `;
 
     const DotLoader = () => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left', height: '7px', padding: '0', background: '#fff', }}>
-            <Dot>•</Dot>
-            <Dot>•</Dot>
-            <Dot>•</Dot>
+        <div className="dot-container">
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
         </div>
     );
+
 
     const handleSessionClick = (sessionId) => {
         setSelectedSessionId(sessionId);
@@ -391,45 +392,88 @@ const History = () => {
           
         })));
     };
-    const typingEffect = (messageText, sessionId) => {
+    const typingEffect = (messageText) => {
         return new Promise((resolve) => {
             let currentIndex = 0;
             const interval = setInterval(() => {
-                setMessagesBySession((prevMessages) => {
-                    const newMessages = { ...prevMessages };
-                    if (newMessages[sessionId]) {
-                        const lastMessageIndex = newMessages[sessionId].length - 1;
-                        const lastMessage = newMessages[sessionId][lastMessageIndex];
-
-                      
-                        lastMessage.Message = messageText.substring(0, currentIndex + 1);
+                setCurrentChat((prevMessages) => {
+                    const updatedMessages = [...prevMessages];
+                    const lastMessage = updatedMessages[updatedMessages.length - 1];
+    
+                    if (lastMessage.isLoading) {
+                        // Simulate typing by updating the message text one character at a time
+                        lastMessage.text = messageText.substring(0, currentIndex + 1);
                     }
-                    return newMessages;
+    
+                    return updatedMessages;
                 });
-
+    
                 currentIndex++;
                 if (currentIndex === messageText.length) {
                     clearInterval(interval);
                     resolve();
                 }
-            }, 50); 
+            }, 50); // Typing speed, 50ms per character
         });
     };
+
     const handleNewMessageSend = async (input) => {
-        const newMessage = {
+        const userMessage = {
             text: input,
             isUserMessage: true,
             timestamp: dayjs().format('HH:mm'),
         };
-        setCurrentChat(prev => [...prev, newMessage]);
-
+    
+        setCurrentChat(prev => {
+            const newChat = Array.isArray(prev) ? [...prev] : [];
+            return [
+                ...newChat,
+                userMessage,
+                { text: <DotLoader />, isUserMessage: false, isLoading: true, timestamp: dayjs().format('HH:mm') }
+            ];
+        });
+    
         try {
-             await handleMessageSend(input);
+            await handleMessageSend(input);
+            const response = await fetchAgentResponse();
+            await typingEffect(response);
+    
+            setCurrentChat(prev => {
+                const newChat = Array.isArray(prev) ? [...prev] : [userMessage];
+                const loadingIndex = newChat.findIndex(msg => msg.isLoading);
+    
+                if (loadingIndex === -1) {
+                    return [...newChat, { text: response, isUserMessage: false, timestamp: dayjs().format('HH:mm') }];
+                }
+    
+                return [
+                    ...newChat.slice(0, loadingIndex),
+                    { text: response, isUserMessage: false, timestamp: dayjs().format('HH:mm') }
+                ];
+            });
+    
+            // Group messages by date
+            groupSessionsByDate();
+    
         } catch (error) {
-            console.error('Error sending message:', error);
+            console.error('Error sending message or receiving response:', error);
+            
+            setCurrentChat(prev => {
+                const newChat = Array.isArray(prev) ? [...prev] : [userMessage];
+                const loadingIndex = newChat.findIndex(msg => msg.isLoading);
+    
+                if (loadingIndex === -1) {
+                    return [...newChat, { text: 'Error: Unable to fetch response.', isUserMessage: false, timestamp: dayjs().format('HH:mm') }];
+                }
+    
+                return [
+                    ...newChat.slice(0, loadingIndex),
+                    { text: 'Error: Unable to fetch response.', isUserMessage: false, timestamp: dayjs().format('HH:mm') }
+                ];
+            });
         }
     };
-
+    
 
     const handleMessageSend = async (input) => {
         try {
@@ -454,9 +498,7 @@ const History = () => {
                         IsUserMessage: true,
                         Message: input,
                         Timestamp: new Date().toISOString(),
-                    },
-                
-
+                    }
                 ],
             }));
 
@@ -567,15 +609,6 @@ const History = () => {
             console.error("Error:", error);
             const errorMessage = "An error occurred while fetching the response.";
     
-            // Store error message
-            await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
-                action: 'store',
-                email: localStorage.getItem('username'),
-                password: localStorage.getItem('password'),
-                sessionId: sessionId,
-                message: errorMessage,
-                isUserMessage: false
-            });
     
             setMessagesBySession((prevMessages) => ({
                 ...prevMessages,
@@ -682,7 +715,6 @@ const History = () => {
             };
         }, []);
     
-        // Automatically scroll when new messages are added if the user is at/near the bottom
         useEffect(() => {
             scrollToBottom();
         }, [messages]);

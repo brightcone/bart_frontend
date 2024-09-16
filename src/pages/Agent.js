@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import { BedrockAgentRuntimeClient, InvokeAgentCommand } from "@aws-sdk/client-bedrock-agent-runtime";
@@ -11,7 +11,7 @@ import DashboardContent from "../components/AgentContent";
 import Icon8 from "../assets/arrow-circle-up.svg";
 import Icon7 from "../assets/plus-circle.svg";
 import ChatLogo from "../assets/Genie.svg";
-import Profile from "../assets/profile.svg"; // Import the Profile logo
+import Profile from "../assets/profile.svg"; 
 import Lock from "../assets/lock.svg";
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
@@ -126,9 +126,7 @@ const Agent = () => {
         console.log(`Message Created:`, message); // Debug statement to verify message creation
         return message;
     };
-
-
-
+ 
     const ChatMessage = ({ message, userName, messages }) => {
         const profilePhoto = localStorage.getItem("profilePhoto");
         const fullName = localStorage.getItem("fullName");
@@ -643,10 +641,14 @@ const Agent = () => {
         };
 
         const handleKeyDown = (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleSubmit(e);
+            if (e.key === 'Enter' && e.shiftKey) {
+                return; 
+            } else if (e.key === 'Enter') {
+                e.preventDefault(); 
+                handleSubmit(e); 
             }
+            
+
         };
 
         return (
