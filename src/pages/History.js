@@ -23,7 +23,6 @@ import UserContext from '../components/UserContext';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault('Asia/Kolkata');
-
 const History = () => {
     const [messagesBySession, setMessagesBySession] = useState({});
     const [isLoading, setIsLoading] = useState(true);
@@ -43,6 +42,17 @@ const History = () => {
     const [facialAuthLink, setFacialAuthLink] = useState('');
     const [isVerificationCompleted, setIsVerificationCompleted] = useState(false);
     const [hasSentVerificationMessage, setHasSentVerificationMessage] = useState(false);
+    const endOfMessagesRef = useRef(null);
+    const [inputValue, setInputValue] = useState('');
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [showLogoutButton, setShowLogoutButton] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const navigate = useNavigate();
+    const [selectedOption, setSelectedOption] = useState(null);
+
+    useEffect(() => {
+        endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
 
     useEffect(() => {
         fetchMessages();
@@ -59,10 +69,7 @@ const History = () => {
         }
     }, [isVerificationCompleted, hasSentVerificationMessage]);
 
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const [showLogoutButton, setShowLogoutButton] = useState(false);
-
-    const navigate = useNavigate();
+   
     const handleTemplateClick = (path) => {
         navigate(path);
     };
@@ -75,7 +82,6 @@ const History = () => {
         setShowLogoutButton(true);
     };
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -83,8 +89,173 @@ const History = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+    const handleOptionClick = (option) => {
+        console.log('Clicked Option ID:', option.id); // Debug: Log clicked option ID
+        setSelectedOption(option.id); // Update the selected option state
+        console.log('Selected Option State:', selectedOption); // Debug: Check if state updates correctly
+        handleMessageSend(option.text);
+      };
+    
+    const options = [
+        { id: 1, text: 'Email' },
+        { id: 2, text: 'Employee Portal' },
+        { id: 3, text: 'HR Management' },
+        { id: 4, text: 'Project Management Tools' },
+        { id: 5, text: 'Other' }
+    ];
+
+    const OptionCard = ({ option, onClick, isSelected }) => (
+        <button
+            className={`option-card ${isSelected ? 'selected' : ''}`} // Add selected class if the option is selected
+            onClick={onClick}
+            style={{
+                backgroundColor: isSelected ? '#d3d3d3' : '#2d2d3e', // Change to your preferred selected color
+                cursor: 'pointer',
+                border: isSelected ? '2px solid #000' : '1px solid #2d2d3e', // Optional: Add border style when selected
+            }}
+        >
+            {option.text}
+        </button>
+    );
 
 
+
+    const OTPInputCard = ({ onSubmitOTP, otp, setOtp }) => {
+        const inputRefs = useRef([]);
+        const [isSubmitted, setIsSubmitted] = useState(false);
+    
+        useEffect(() => {
+            if (inputRefs.current[0]) {
+                inputRefs.current[0].focus();
+            }
+        }, []);
+    
+        useEffect(() => {
+            const firstEmptyIndex = otp.findIndex((value) => value === '');
+            if (firstEmptyIndex >= 0 && inputRefs.current[firstEmptyIndex]) {
+                inputRefs.current[firstEmptyIndex].focus();
+            }
+        }, [otp]);
+    
+        const handleChange = (index, value, event) => {
+            const newOtp = otp.slice();
+            newOtp[index] = value.slice(-1); // Keep only the last entered character
+            setOtp(newOtp);
+    
+            // Move focus to the next input field if a value is entered and it's not the last field
+            if (value && index < otp.length - 1) {
+                inputRefs.current[index + 1]?.focus();
+            }
+        };
+    
+        const handleKeyDown = (index, event) => {
+            const isBackspace = event.key === 'Backspace';
+            if (isBackspace) {
+                event.preventDefault(); // Prevent the default backspace behavior to manage focus manually
+                if (!otp[index] && index > 0) {
+                    // Move to the previous input if current is empty and backspace is pressed
+                    inputRefs.current[index - 1]?.focus();
+                    const updatedOtp = otp.slice();
+                    updatedOtp[index - 1] = ''; // Optionally clear the previous input when backspace is hit
+                    setOtp(updatedOtp);
+                } else {
+                    // Clear current value if not already empty
+                    const updatedOtp = otp.slice();
+                    updatedOtp[index] = '';
+                    setOtp(updatedOtp);
+                }
+            } else if (event.key === 'Enter') {
+                handleSubmit(); // Handle the Enter key for submission
+            }
+        };
+    
+        const handleSubmit = () => {
+            setIsSubmitted(true);
+            onSubmitOTP('Done');
+        };
+    
+        if (isSubmitted) {
+            return null; // Remove the component from the DOM after submission
+        }
+    
+        return (
+            <div className="otp-input-card">
+                <div className="otp-label">Please enter OTP below</div>
+                <div className="otp-inputs">
+                    {otp.map((value, index) => (
+                        <input
+                            key={index}
+                            type="text"
+                            value={value}
+                            onChange={(e) => handleChange(index, e.target.value, e)}
+                            onKeyDown={(e) => handleKeyDown(index, e)}
+                            onFocus={(e) => e.target.select()}
+                            maxLength="1"
+                            ref={(el) => (inputRefs.current[index] = el)}
+                            className="otp-input"
+                        />
+                    ))}
+                </div>
+                <button className="otp-submit-btn" onClick={handleSubmit}>
+                    Submit
+                </button>
+            </div>
+        );
+    };
+    const VideoVerificationCard = ({ link, onVerificationComplete }) => {
+        const [isSelected, setIsSelected] = useState(false);
+    
+        const handleClick = () => {
+            setFacialAuthLink(link);
+            setShowFacialAuth(true);
+            //setIsVerificationCompleted(true);
+        };
+
+        useEffect(() => {
+            if(isVerificationCompleted) {
+                console.log(isSelected);
+                setIsSelected((e) => true); 
+            }
+        }, [isVerificationCompleted]);
+    
+        return (
+            <button
+                className={`video-verification-card ${isSelected ? 'selected' : ''}`} // Add selected class if the option is selected
+                onClick={handleClick}
+                style={{
+                    cursor: 'pointer',
+                    border: isSelected ? '2px solid #000' : '1px solid #2d2d3e', // Apply similar border style
+                }} 
+            >
+                Face Recognition
+            </button>
+        );
+    };
+    const handleAuthComplete = () => {
+        setShowFacialAuth(false);
+        setIsVerificationCompleted(true);
+    };
+
+
+    const TicketCard = ({ ticketNo, link, assignedTo, time }) => (
+        <div className="ticket-card" onClick={() => window.open(link, '_blank')}>
+            <div className="ticket-info">
+                <div className="ticket-label">Ticket No:</div>
+                <div className="ticket-value">{ticketNo}</div>
+            </div>
+            <div className="ticket-info">
+                <div className="ticket-label">Assigned To:</div>
+                <div className="ticket-value">{assignedTo}</div>
+            </div>
+            <div className="ticket-footer">
+                <div className="ticket-time">{time}</div>
+                <a href={link} target="_blank" rel="noopener noreferrer" className="view-ticket">View Ticket</a>
+            </div>
+        </div>
+    );
+
+
+    
     const fetchMessages = async () => {
         try {
             const username = localStorage.getItem('username');
@@ -172,29 +343,17 @@ const History = () => {
         return contentPreview.length > 50 ? `${contentPreview.substring(0, 50)}...` : contentPreview;
     };
 
-    const dotFlashing = keyframes`
-        0% { opacity: 1; }
-        50%, 100% { opacity: 0; }
-    `;
-
-    const Dot = styled.span`
-        font-size: 34px;
-        color: #001f3f;
-        animation: ${dotFlashing} 1s infinite linear;
-        background: '#fff'; 
-        margin: 0 1px;
-
-        &:nth-child(2) { animation-delay: 0.3s; }
-        &:nth-child(3) { animation-delay: 0.6s; }
-    `;
 
     const DotLoader = () => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'left', height: '7px', padding: '0', background: '#fff', }}>
-            <Dot>•</Dot>
-            <Dot>•</Dot>
-            <Dot>•</Dot>
+        <div className="dot-container">
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
         </div>
     );
+
+
+const getCurrentTime = () => dayjs().format('HH:mm');
 
     const handleSessionClick = (sessionId) => {
         setSelectedSessionId(sessionId);
@@ -208,110 +367,86 @@ const History = () => {
           
         })));
     };
-    const typingEffect = (messageText, sessionId) => {
-        return new Promise((resolve) => {
-            let currentIndex = 0;
-            const interval = setInterval(() => {
-                setMessagesBySession((prevMessages) => {
-                    const newMessages = { ...prevMessages };
-                    if (newMessages[sessionId]) {
-                        const lastMessageIndex = newMessages[sessionId].length - 1;
-                        const lastMessage = newMessages[sessionId][lastMessageIndex];
-
-                      
-                        lastMessage.Message = messageText.substring(0, currentIndex + 1);
-                    }
-                    return newMessages;
-                });
-
-                currentIndex++;
-                if (currentIndex === messageText.length) {
-                    clearInterval(interval);
-                    resolve();
+    const typingEffect = async (text, sessionId) => {
+        let currentIndex = 0;
+        const typingInterval = 30; // milliseconds per character
+    
+        while (currentIndex < text.length) {
+            await new Promise(resolve => setTimeout(resolve, typingInterval));
+            currentIndex++;
+    
+            setCurrentChat(prevChat => {
+                const newChat = [...prevChat];
+                const lastMessageIndex = newChat.length - 1;
+                if (lastMessageIndex >= 0 && !newChat[lastMessageIndex].isUserMessage) {
+                    newChat[lastMessageIndex] = {
+                        ...newChat[lastMessageIndex],
+                        text: text.substring(0, currentIndex),
+                    };
                 }
-            }, 50); 
-        });
+                return newChat;
+            });
+        }
     };
     const handleNewMessageSend = async (input) => {
         const newMessage = {
             text: input,
             isUserMessage: true,
-            timestamp: dayjs().format('HH:mm'),
+            timestamp: getCurrentTime(),
         };
         setCurrentChat(prev => [...prev, newMessage]);
-
+    
         try {
-             await handleMessageSend(input);
+            await handleMessageSend(input);
         } catch (error) {
             console.error('Error sending message:', error);
         }
     };
-
-
     const handleMessageSend = async (input) => {
+        const username = localStorage.getItem('username');
+        const password = localStorage.getItem('password');
+        const sessionId = selectedSessionId || uuidv4();
+    
         try {
-            const username = localStorage.getItem('username');
-            const password = localStorage.getItem('password');
-            const sessionId = selectedSessionId || uuidv4();
-
-            await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
-                action: 'store',
-                email: username,
-                password: password,
-                sessionId: sessionId,
-                message: input,
-                isUserMessage: true
-            });
-
-            setMessagesBySession((prevMessages) => ({
-                ...prevMessages,
-                [sessionId]: [
-                    ...(prevMessages[sessionId] || []),
-                    {
-                        IsUserMessage: true,
-                        Message: input,
-                        Timestamp: new Date().toISOString(),
-                    },
-                
-
-                ],
-            }));
-
-            setSelectedSessionId(sessionId);
             setIsTyping(true);
             setShowLoader(true);
-
-            await fetchAgentResponse(input, sessionId);
-        } catch (error) {
-            console.error('Error sending message:', error);
-        }
-    };
-
-    const fetchAgentResponse = async (input, sessionId) => {
-        const client = new BedrockAgentRuntimeClient({
-            region: "us-east-1",
-            credentials: {
-                accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-                secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
-            }
-        });
-
-        const command = new InvokeAgentCommand({
-            agentId: "U3YHVQFHVA",
-            agentAliasId: "FS3BRWFZ15",
-            sessionId: sessionId,
-            inputText: input
-        });
-
-        try {
+    
+            // Remove any existing loading messages
+            setCurrentChat(prevChat => prevChat.filter(msg => !msg.isLoading));
+    
+            // Add a single loading message for the agent
+            setCurrentChat(prevChat => [
+                ...prevChat,
+                { 
+                    text: <DotLoader />, 
+                    isUserMessage: false, 
+                    isLoading: true, 
+                    timestamp: getCurrentTime() 
+                }
+            ]);
+    
+            const client = new BedrockAgentRuntimeClient({
+                region: "us-east-1",
+                credentials: {
+                    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+                    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+                }
+            });
+    
+            const command = new InvokeAgentCommand({
+                agentId: "U3YHVQFHVA",
+                agentAliasId: "FS3BRWFZ15",
+                sessionId: sessionId,
+                inputText: input
+            });
+    
             let fullResponse = '';
             const decoder = new TextDecoder('utf-8');
-
+    
             const response = await client.send(command);
             console.log('API Response:', response);
-
+    
             if (response.completion) {
-                setShowLoader(false);
                 for await (const event of response.completion) {
                     if (event.chunk && event.chunk.bytes) {
                         try {
@@ -323,20 +458,163 @@ const History = () => {
                         }
                     }
                 }
-
+    
                 const existingMessages = messagesBySession[sessionId] || [];
                 const isDuplicate = existingMessages.some(msg => msg.Message === fullResponse && !msg.IsUserMessage);
-
+    
                 if (!isDuplicate) {
                     await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
                         action: 'store',
-                        email: localStorage.getItem('username'),
-                        password: localStorage.getItem('password'),
+                        email: username,
+                        password: password,
                         sessionId: sessionId,
                         message: fullResponse,
                         isUserMessage: false
                     });
+    
+                    const newMessage = {
+                        Message: fullResponse,
+                        IsUserMessage: false,
+                        showOptions: fullResponse.includes("application") || fullResponse.includes("Application"),
+                        showOTP: fullResponse.includes("enter the OTP") || fullResponse.includes("invalid") || fullResponse.includes("expired"),
+                        //  isTicketMessage = fullResponse.includes("The Jira ticket was created successfully!");
 
+                        showVideoVerification: fullResponse.includes("video verification"),
+                        link: fullResponse.includes("video verification") ? fullResponse.match(/https:\/\/\S+/)?.[0]?.split(' ')[0] : null
+                    };
+    
+                    setMessagesBySession((prevMessages) => ({
+                        ...prevMessages,
+                        [sessionId]: [
+                            ...(prevMessages[sessionId] || []),
+                            newMessage
+                        ]
+                    }));
+    
+                    // Remove loading message and add an empty agent message
+                    setCurrentChat(prevChat => [
+                        ...prevChat.filter(msg => !msg.isLoading),
+                        {
+                            text: '',
+                            isUserMessage: false,
+                            timestamp: getCurrentTime(),
+                            showOptions: newMessage.showOptions,
+                            showOTP: newMessage.showOTP,
+                            showVideoVerification: newMessage.showVideoVerification,
+                            link: newMessage.link
+                        }
+                    ]);
+    
+                    // Trigger typing effect here
+                    await typingEffect(fullResponse, sessionId);
+    
+                    if (newMessage.showVideoVerification) {
+                        setFacialAuthLink(newMessage.link);
+                        setShowFacialAuth(true);
+                    }
+    
+                    // Update chat history in local storage
+                    const existingHistory = JSON.parse(localStorage.getItem('history') || '[]');
+                    const newEntry = { input, response: fullResponse };
+                    const updatedHistory = [...existingHistory, newEntry];
+                    localStorage.setItem('history', JSON.stringify(updatedHistory));
+                }
+            } else {
+                console.error('Unexpected API response structure:', response);
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            const errorMessage = "An error occurred while fetching the response.";
+    
+            // Store error message
+            await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
+                action: 'store',
+                email: username,
+                password: password,
+                sessionId: sessionId,
+                message: errorMessage,
+                isUserMessage: false
+            });
+    
+            // Add error message to the conversation
+            setMessagesBySession((prevMessages) => ({
+                ...prevMessages,
+                [sessionId]: [
+                    ...(prevMessages[sessionId] || []),
+                    {
+                        IsUserMessage: false,
+                        Message: errorMessage,
+                        Timestamp: new Date().toISOString(),
+                    },
+                ],
+            }));
+    
+            // Update current chat with the error message
+            setCurrentChat(prevChat => [
+                ...prevChat.filter(msg => !msg.isLoading),
+                {
+                    text: errorMessage,
+                    isUserMessage: false,
+                    timestamp: getCurrentTime(),
+                }
+            ]);
+        } finally {
+            setIsTyping(false);
+            setShowLoader(false);
+        }
+    };
+    const fetchAgentResponse = async (input, sessionId) => {
+        const client = new BedrockAgentRuntimeClient({
+            region: "us-east-1",
+            credentials: {
+                accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+            }
+        });
+    
+        const command = new InvokeAgentCommand({
+            agentId: "U3YHVQFHVA",
+            agentAliasId: "FS3BRWFZ15",
+            sessionId: sessionId,
+            inputText: input
+        });
+    
+        try {
+            let fullResponse = '';
+            const decoder = new TextDecoder('utf-8');
+    
+            const response = await client.send(command);
+            console.log('API Response:', response);
+    
+            if (response.completion) {
+                setShowLoader(false);
+                setCurrentChat(prev => prev.filter(msg => !msg.isLoading));
+    
+                for await (const event of response.completion) {
+                    if (event.chunk && event.chunk.bytes) {
+                        try {
+                            const byteArray = new Uint8Array(event.chunk.bytes);
+                            const decodedString = decoder.decode(byteArray, { stream: true });
+                            fullResponse += decodedString;
+                        } catch (decodeError) {
+                            console.error("Error decoding chunk:", decodeError);
+                        }
+                    }
+                }
+    
+                await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
+                    action: 'store',
+                    email: localStorage.getItem('username'),
+                    password: localStorage.getItem('password'),
+                    sessionId: sessionId,
+                    message: fullResponse,
+                    isUserMessage: false
+                });
+    
+                const existingMessages = messagesBySession[sessionId] || [];
+                const isDuplicate = existingMessages.some(msg => msg.Message === fullResponse && !msg.IsUserMessage);
+    
+                if (!isDuplicate) {
                     const newMessage = {
                         Message: fullResponse,
                         IsUserMessage: false,
@@ -354,23 +632,28 @@ const History = () => {
                         ]
                     }));
     
-                    setCurrentChat(prevChat => [...prevChat, {
-                        text: fullResponse,
-                        isUserMessage: false,
-                        timestamp: dayjs().format('HH:mm'),
-                        ...newMessage
-                    }]);
-    
-                    // Simulate agent's typing effect
+                    // Trigger typing effect here
                     await typingEffect(fullResponse, sessionId);
     
-                    // Handle video verification
+                    // Add the full message to currentChat after typing effect
+                    setCurrentChat(prevChat => [
+                        ...prevChat,
+                        {
+                            text: fullResponse,
+                            isUserMessage: false,
+                            timestamp: getCurrentTime(),
+                            showOptions: newMessage.showOptions,
+                            showOTP: newMessage.showOTP,
+                            showVideoVerification: newMessage.showVideoVerification,
+                            link: newMessage.link
+                        }
+                    ]);
+    
                     if (newMessage.showVideoVerification) {
                         setFacialAuthLink(newMessage.link);
                         setShowFacialAuth(true);
                     }
     
-                    // Update chat history in local storage
                     const existingHistory = JSON.parse(localStorage.getItem('history') || '[]');
                     const newEntry = { input, response: fullResponse };
                     const updatedHistory = [...existingHistory, newEntry];
@@ -383,7 +666,6 @@ const History = () => {
             console.error("Error:", error);
             const errorMessage = "An error occurred while fetching the response.";
     
-            // Store error message
             await axios.post('https://n6nf7fbb02.execute-api.us-east-1.amazonaws.com/prod/chat', {
                 action: 'store',
                 email: localStorage.getItem('username'),
@@ -404,10 +686,89 @@ const History = () => {
                     },
                 ],
             }));
+    
+            // Add error message to currentChat
+            setCurrentChat(prevChat => [
+                ...prevChat,
+                {
+                    text: errorMessage,
+                    isUserMessage: false,
+                    timestamp: getCurrentTime(),
+                }
+            ]);
         }
     };
+    const handleInputChange = (e) => {
+        setInputValue(e.target.value);
+    };
     
-    const ChatMessage = ({ message, userName }) => {
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (inputValue.trim()) {
+                handleNewMessageSend(inputValue);
+                setInputValue('');
+            }
+        }
+    };
+
+  const ChatMessage = ({ message, userName }) => {
+    const [hasScrolled, setHasScrolled] = useState(false);
+    const messagesEndRef = useRef(null);
+    const chatContainerRef = useRef(null);
+
+        const scrollToBottom = () => {
+            if (!hasScrolled) {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+    
+        // Track if the user has manually scrolled up
+        const handleScroll = () => {
+            if (!chatContainerRef.current) return;
+            const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+            const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50; // 50px threshold
+            setHasScrolled(!isAtBottom); // If the user is not at the bottom, they've scrolled
+        };
+    
+        useEffect(() => {
+            const chatContainer = chatContainerRef.current;
+            if (chatContainer) {
+                chatContainer.addEventListener('scroll', handleScroll);
+            }
+            return () => {
+                if (chatContainer) {
+                    chatContainer.removeEventListener('scroll', handleScroll);
+                }
+            };
+        }, []);
+    
+        // Automatically scroll when new messages are added if the user is at/near the bottom
+        useEffect(() => {
+            scrollToBottom();
+        }, [messages]);
+
+    if (message.isLoading) {
+        return (
+            <div className="chat-message">
+                <div className="message-row agent">
+                    <img src={ChatLogo} alt="BART Genie" className="avatar" />
+                    <div className="message-info">
+                        <div className="header">
+                            <span className="agent-name">BART Genie</span>
+                            <span style={{ display: 'inline-block', width: '3px', height: '3px', backgroundColor: 'white', borderRadius: '100%', paddingLeft: '0.5px', marginLeft: '5px' }}></span>
+                            <span className="timestamp" style={{ fontSize: '14px' }}>
+                                {message.timestamp}
+                            </span>
+                        </div>
+                        <div className="message-text">
+                            <DotLoader />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
         return (
             <div className="chat-message">
                 <div className={`message-row ${message.isUserMessage ? 'user' : 'agent'}`}>
@@ -429,19 +790,60 @@ const History = () => {
                             </span>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            {(message.showOptions || message.showOTP) && (
-                                <div className="gradient-bar" style={{ display: 'flex' }}></div>
-                            )}
+                                {(message.showOptions || message.showOTP || message.showVideoVerification || message.ticketInfo) && (
+                                    <div className="gradient-bar" style={{ display: 'flex' }}></div>
+                                )}
                             <div>
-                                <div className="message-text">
-                                    {message.text}
+                            
+                                <div>
+                                        <div className="message-text">
+                                            {message.text === "Done" ? "Done" : message.text}
+                                        </div>
+                                        {message.showOptions && (
+                                            <div className="option-cards">
+                                                {options.map((option) => (
+                                                    <OptionCard
+                                                        key={option.id}
+                                                        option={option}
+                                                        onClick={() => handleOptionClick(option)}
+                                                        isSelected={selectedOption === option.id}
+                                                    />
+                                                ))}
+                                            </div>
+                                        )}
+                                        {message.showOTP && (
+                                            <OTPInputCard
+                                                otp={otp}
+                                                setOtp={setOtp}
+                                                onSubmitOTP={(displayText) =>
+                                                    handleMessageSend(displayText, true, otp.join(''))
+                                                }
+                                            />
+                                        )}
+                                        {message.showVideoVerification && message.videoVerificationCard && (
+                                            <VideoVerificationCard
+                                                link={message.link}
+                                                onVerificationComplete={handleAuthComplete}
+                                            />
+                                        )}
+                                        {message.ticketInfo && message.ticketInfo.showTicket && (
+                                            <TicketCard
+                                                ticketNo={message.ticketInfo.ticketNo}
+                                                link={message.ticketInfo.link}
+                                                assignedTo={message.ticketInfo.assignedTo}
+                                                time={message.ticketInfo.time}
+                                            />
+                                        )}
+                                    </div>
                                 </div>
-                               
+
                             </div>
                         </div>
+                        <div ref={messagesEndRef} />
+
                     </div>
                 </div>
-            </div>
+           
         );
     };
 
@@ -492,7 +894,8 @@ const History = () => {
                     ))}
                 </div>
                 <main className="content" style={{ width: 'auto', backgroundColor: '#1a1a2e', color: '#fff', padding: '20px' }}>
-                    {selectedSessionId ? (
+                {selectedSessionId ? (
+
                         <div className="content-box">
                            
                             <div className="logout-container" style={{ marginLeft: 'auto' }}>
@@ -518,7 +921,7 @@ const History = () => {
                                 </Menu>
                             </div>
                             
-                            <div ref={chatContainerRef} className="chat-message-container" style={{ maxHeight:'85%',overflowY: 'auto' }}>
+                            <div ref={chatContainerRef} className="chat-message-container" style={{ overflowY: 'auto', maxHeight: '500px' }}>
                                 {currentChat.map((msg, index) => (
                                     <ChatMessage
                                         key={index}
@@ -528,27 +931,43 @@ const History = () => {
                                 ))}
                             </div>
                             <div className="chat">
-                                <img src={Icon7} alt="New message" />
-                                <input 
-                                    type="text" 
-                                    placeholder="Ask BART Genie" 
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            handleNewMessageSend(e.target.value);
-                                            e.target.value = '';
-                                        }
-                                    }}
-                                />
-                                <img src={Icon8} alt="Send message" className="template-icon1" onClick={() => {
-                                    const input = document.querySelector('.chat input');
-                                    if (input.value) {
-                                        handleNewMessageSend(input.value);
-                                        input.value = '';
+                            <img src={Icon7} alt="New message" />
+                            <textarea
+                        placeholder="Ask BART Genie"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
+                        rows={1}
+                        style={{
+                            flex: 1, 
+                            padding: '10px', 
+                            marginLeft: '7px', 
+                            marginRight: '7px', 
+                            resize: 'none',
+                            border: 'none',
+                            background: 'none',
+                            color: 'white',
+                            fontSize: '16px', 
+                            overflowY: 'scroll', 
+                            scrollbarWidth: 'none', 
+                            outline:'none',
+                        }}
+                        className="hidden-scrollbar"
+                    />
+                            <img 
+                                src={Icon8} 
+                                alt="Send message" 
+                                className="template-icon1" 
+                                onClick={() => {
+                                    if (inputValue.trim()) {
+                                        handleNewMessageSend(inputValue);
+                                        setInputValue('');
                                     }
-                                }}/>
-                            </div>
+                                }}
+                            />
                         </div>
-                    ) : (
+                    </div>
+                ) : (
                         <DashboardContent />
                     )}
                 </main>
