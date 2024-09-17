@@ -507,6 +507,7 @@ const getCurrentTime = () => dayjs().format('HH:mm');
     
                     // Trigger typing effect here
                     await typingEffect(fullResponse, sessionId);
+                    await fetchAgentResponse(fullResponse,sessionId);
     
                     if (newMessage.showVideoVerification) {
                         setFacialAuthLink(newMessage.link);
@@ -549,7 +550,7 @@ const getCurrentTime = () => dayjs().format('HH:mm');
                 ],
             }));
     
-            // Update current chat with the error message
+            
             setCurrentChat(prevChat => [
                 ...prevChat.filter(msg => !msg.isLoading),
                 {
@@ -921,7 +922,7 @@ const getCurrentTime = () => dayjs().format('HH:mm');
                                 </Menu>
                             </div>
                             
-                            <div ref={chatContainerRef} className="chat-message-container" style={{ overflowY: 'auto', maxHeight: '500px' }}>
+                            <div ref={chatContainerRef} className="chat-message-container" style={{ overflowY: 'auto', maxHeight: '75%' }}>
                                 {currentChat.map((msg, index) => (
                                     <ChatMessage
                                         key={index}
@@ -951,6 +952,7 @@ const getCurrentTime = () => dayjs().format('HH:mm');
                             overflowY: 'scroll', 
                             scrollbarWidth: 'none', 
                             outline:'none',
+                            fontFamily:'sans-serif'
                         }}
                         className="hidden-scrollbar"
                     />

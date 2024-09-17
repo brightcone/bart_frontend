@@ -199,7 +199,7 @@ const FacialAuthComponent = ({ link, onClose, onComplete }) => {
                         Please blink twice
                     </div>
                 );
-            default: return null;  // Default case can be null or any other appropriate value
+            default: return null;  
         }
     };
 

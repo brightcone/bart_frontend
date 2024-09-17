@@ -35,17 +35,17 @@ const Agent = () => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [showLogoutButton, setShowLogoutButton] = useState(false);
     const [scrollStatus, setScrollStatus] = useState(false);
-    
+    const [userEmail, setUserEmail] = useState('');
+    const [showVideoVerification, setShowVideoVerification] = useState(false);
     const navigate = useNavigate();
     const handleTemplateClick = (path) => {
         navigate(path);
     };
     const handleConfirmLogout = () => {
-        // Redirect to the LoginPage
         navigate('/login');
     };
     const handleLogoutClick = () => {
-        // Toggle the visibility of the logout button
+   
         setShowLogoutButton(true);
     };
 
@@ -57,11 +57,11 @@ const Agent = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
-  // Handle option click, update state and check values
+  
   const handleOptionClick = (option) => {
-    console.log('Clicked Option ID:', option.id); // Debug: Log clicked option ID
-    setSelectedOption(option.id); // Update the selected option state
-    console.log('Selected Option State:', selectedOption); // Debug: Check if state updates correctly
+    console.log('Clicked Option ID:', option.id); 
+    setSelectedOption(option.id); 
+    console.log('Selected Option State:', selectedOption); 
     handleMessageSend(option.text);
   };
 
@@ -74,6 +74,19 @@ const Agent = () => {
     ];
     const location = useLocation();
     const initialPrompt = location.state?.initialPrompt || '';
+
+    const scrollToBottom = () => {
+        const chatContainer = document.querySelector('.scrollmessages');
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    };
+
+    useEffect(() => {
+        if (messages.length > 0) {
+            setTimeout(scrollToBottom, 100); 
+        }
+    }, [messages]);
 
     useEffect(() => {
         setSessionId(uuidv4());
@@ -119,123 +132,202 @@ const Agent = () => {
         return message;
     };
 
-
-
     const ChatMessage = ({ message, userName, messages }) => {
         const profilePhoto = localStorage.getItem("profilePhoto");
         const fullName = localStorage.getItem("fullName");
-        //console.log(`Rendering ChatMessage with Timestamp:`, message.timestamp); // Debug to check the timestamp
-        const messagesEndRef = useRef(null);
-        const chatContainerRef = useRef(null);
-        const [hasScrolled, setHasScrolled] = useState(false);
-    
-        const scrollToBottom = () => {
-            if (!hasScrolled) {
-                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }
-        };
-    
-        // Track if the user has manually scrolled up
-        const handleScroll = () => {
-            if (!chatContainerRef.current) return;
-            const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-            const isAtBottom = scrollHeight - scrollTop <= clientHeight + 100; // 50px threshold
-            setHasScrolled(() => !isAtBottom); // If the user is not at the bottom, they've scrolled
-        };
-    
         useEffect(() => {
-            const chatContainer = chatContainerRef.current;
-            if (chatContainer) {
-                chatContainer.addEventListener('scroll', handleScroll);
-            }
-            return () => {
-                if (chatContainer) {
-                    chatContainer.removeEventListener('scroll', handleScroll);
-                }
-            };
-        }, []);
-    
-        // Automatically scroll when new messages are added if the user is at/near the bottom
-        useEffect(() => {
-            if(!scrollStatus) {
-                return;
-            }
             scrollToBottom();
-        }, [scrollStatus]);
+        }, [message]);
+    
     
         return (
-            <div ref={chatContainerRef} className="chat-message-container" style={{ overflowY: 'auto', maxHeight: '500px' }}>
-                <div className="chat-message">
-                    <div className={`message-row ${message.isUserMessage ? 'user' : 'agent'}`}>
-                        <img
-                            src={message.isUserMessage ? profilePhoto : ChatLogo}
-                            alt={message.isUserMessage ? userName : 'BART Genie'}
-                            className="avatar"
-                        />
-                        <div className="message-info">
-                            <div className="header">
-                                {message.isUserMessage ? (
-                                    <span className="user-name">{fullName || userName || localStorage.getItem('username')}</span>
-                                ) : (
-                                    <span className="agent-name">BART Genie</span>
-                                )}
-                                <span style={{ display: 'inline-block', width: '3px', height: '3px', backgroundColor: 'white', borderRadius: '100%', paddingLeft: '0.5px', marginLeft: '5px' }}></span>
-                                <span className="timestamp" style={{ fontSize: '14px' }}>
-                                    {message.timestamp || ' '}
-                                </span>
-                            </div>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                {(message.showOptions || message.showOTP || message.showVideoVerification || message.ticketInfo) && (
-                                    <div className="gradient-bar" style={{ display: 'flex' }}></div>
-                                )}
-                                <div>
-                                    <div className="message-text">
-                                        {message.text === "Done" ? "Done" : message.text}
-                                    </div>
-                                    {message.showOptions && (
-                                        <div className="option-cards">
-                                            {options.map((option) => (
-                                                <OptionCard
-                                                    key={option.id}
-                                                    option={option}
-                                                    onClick={() => handleOptionClick(option)}
-                                                    isSelected={selectedOption === option.id}
-                                                />
-                                            ))}
-                                        </div>
-                                    )}
-                                    {message.showOTP && (
-                                        <OTPInputCard
-                                            otp={otp}
-                                            setOtp={setOtp}
-                                            onSubmitOTP={(displayText) =>
-                                                handleMessageSend(displayText, true, otp.join(''))
-                                            }
-                                        />
-                                    )}
-                                    {message.showVideoVerification && message.videoVerificationCard && (
-                                        <VideoVerificationCard
-                                            link={message.link}
-                                            onVerificationComplete={handleAuthComplete}
-                                        />
-                                    )}
-                                    {message.ticketInfo && message.ticketInfo.showTicket && (
-                                        <TicketCard
-                                            ticketNo={message.ticketInfo.ticketNo}
-                                            link={message.ticketInfo.link}
-                                            assignedTo={message.ticketInfo.assignedTo}
-                                            time={message.ticketInfo.time}
-                                        />
-                                    )}
+            <div className="chat-message">
+                <div className={`message-row ${message.isUserMessage ? 'user' : 'agent'}`}>
+                    <img
+                        src={message.isUserMessage ? profilePhoto : ChatLogo}
+                        alt={message.isUserMessage ? userName : 'BART Genie'}
+                        className="avatar"
+                    />
+                    <div className="message-info">
+                        <div className="header">
+                            {message.isUserMessage ? (
+                                <span className="user-name">{fullName || userName || localStorage.getItem('username')}</span>
+                            ) : (
+                                <span className="agent-name">BART Genie</span>
+                            )}
+                            <span style={{ display: 'inline-block', width: '3px', height: '3px', backgroundColor: 'white', borderRadius: '100%', paddingLeft: '0.5px', marginLeft: '5px' }}></span>
+                            <span className="timestamp" style={{ fontSize: '14px' }}>
+                                {message.timestamp || ' '}
+                            </span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            {(message.showOptions || message.showOTP || message.showVideoVerification || message.ticketInfo) && (
+                                <div className="gradient-bar" style={{ display: 'flex' }}></div>
+                            )}
+                            <div>
+                                <div className="message-text">
+                                    {message.text === "Done" ? "Done" : message.text}
                                 </div>
+                                {message.showOptions && (
+                                    <div className="option-cards">
+                                        {options.map((option) => (
+                                            <OptionCard
+                                                key={option.id}
+                                                option={option}
+                                                onClick={() => handleOptionClick(option)}
+                                                isSelected={selectedOption === option.id}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                                {message.showOTP && (
+                                    <OTPInputCard
+                                        otp={otp}
+                                        setOtp={setOtp}
+                                        onSubmitOTP={(displayText) =>
+                                            handleMessageSend(displayText, true, otp.join(''))
+                                        }
+                                    />
+                                )}
+                                {message.showVideoVerification && message.videoVerificationCard && (
+                                    <VideoVerificationCard
+                                        link={message.link}
+                                        onVerificationComplete={handleAuthComplete}
+                                    />
+                                )}
+                                {message.ticketInfo && message.ticketInfo.showTicket && (
+                                    <TicketCard
+                                        ticketNo={message.ticketInfo.ticketNo}
+                                        link={message.ticketInfo.link}
+                                        assignedTo={message.ticketInfo.assignedTo}
+                                        time={message.ticketInfo.time}
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
-                    <div ref={messagesEndRef} />
                 </div>
             </div>
         );
     };
+
+
+
+    // const ChatMessage = ({ message, userName, messages }) => {
+    //     const profilePhoto = localStorage.getItem("profilePhoto");
+    //     const fullName = localStorage.getItem("fullName");
+    //     //console.log(`Rendering ChatMessage with Timestamp:`, message.timestamp); // Debug to check the timestamp
+    //     const messagesEndRef = useRef(null);
+    //     const chatContainerRef = useRef(null);
+    //     const [hasScrolled, setHasScrolled] = useState(false);
+    
+    //     const scrollToBottom = () => {
+    //         if (!hasScrolled) {
+    //             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    //         }
+    //     };
+    
+    //     // Track if the user has manually scrolled up
+    //     const handleScroll = () => {
+    //         if (!chatContainerRef.current) return;
+    //         const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    //         const isAtBottom = scrollHeight - scrollTop <= clientHeight + 100; // 50px threshold
+    //         setHasScrolled(() => !isAtBottom); // If the user is not at the bottom, they've scrolled
+    //     };
+    
+    //     useEffect(() => {
+    //         const chatContainer = chatContainerRef.current;
+    //         if (chatContainer) {
+    //             chatContainer.addEventListener('scroll', handleScroll);
+    //         }
+    //         return () => {
+    //             if (chatContainer) {
+    //                 chatContainer.removeEventListener('scroll', handleScroll);
+    //             }
+    //         };
+    //     }, []);
+    
+    //     // Automatically scroll when new messages are added if the user is at/near the bottom
+    //     useEffect(() => {
+    //         if(!scrollStatus) {
+    //             return;
+    //         }
+    //         scrollToBottom();
+    //     }, [scrollStatus]);
+    
+    //     return (
+    //         <div ref={chatContainerRef} className="chat-message-container" style={{ overflowY: 'auto', maxHeight: '500px' }}>
+    //             <div className="chat-message">
+    //                 <div className={`message-row ${message.isUserMessage ? 'user' : 'agent'}`}>
+    //                     <img
+    //                         src={message.isUserMessage ? profilePhoto : ChatLogo}
+    //                         alt={message.isUserMessage ? userName : 'BART Genie'}
+    //                         className="avatar"
+    //                     />
+    //                     <div className="message-info">
+    //                         <div className="header">
+    //                             {message.isUserMessage ? (
+    //                                 <span className="user-name">{fullName || userName || localStorage.getItem('username')}</span>
+    //                             ) : (
+    //                                 <span className="agent-name">BART Genie</span>
+    //                             )}
+    //                             <span style={{ display: 'inline-block', width: '3px', height: '3px', backgroundColor: 'white', borderRadius: '100%', paddingLeft: '0.5px', marginLeft: '5px' }}></span>
+    //                             <span className="timestamp" style={{ fontSize: '14px' }}>
+    //                                 {message.timestamp || ' '}
+    //                             </span>
+    //                         </div>
+    //                         <div style={{ display: 'flex', gap: '0.5rem' }}>
+    //                             {(message.showOptions || message.showOTP || message.showVideoVerification || message.ticketInfo) && (
+    //                                 <div className="gradient-bar" style={{ display: 'flex' }}></div>
+    //                             )}
+    //                             <div>
+    //                                 <div className="message-text">
+    //                                     {message.text === "Done" ? "Done" : message.text}
+    //                                 </div>
+    //                                 {message.showOptions && (
+    //                                     <div className="option-cards">
+    //                                         {options.map((option) => (
+    //                                             <OptionCard
+    //                                                 key={option.id}
+    //                                                 option={option}
+    //                                                 onClick={() => handleOptionClick(option)}
+    //                                                 isSelected={selectedOption === option.id}
+    //                                             />
+    //                                         ))}
+    //                                     </div>
+    //                                 )}
+    //                                 {message.showOTP && (
+    //                                     <OTPInputCard
+    //                                         otp={otp}
+    //                                         setOtp={setOtp}
+    //                                         onSubmitOTP={(displayText) =>
+    //                                             handleMessageSend(displayText, true, otp.join(''))
+    //                                         }
+    //                                     />
+    //                                 )}
+    //                                 {message.showVideoVerification && message.videoVerificationCard && (
+    //                                     <VideoVerificationCard
+    //                                         link={message.link}
+    //                                         onVerificationComplete={handleAuthComplete}
+    //                                     />
+    //                                 )}
+    //                                 {message.ticketInfo && message.ticketInfo.showTicket && (
+    //                                     <TicketCard
+    //                                         ticketNo={message.ticketInfo.ticketNo}
+    //                                         link={message.ticketInfo.link}
+    //                                         assignedTo={message.ticketInfo.assignedTo}
+    //                                         time={message.ticketInfo.time}
+    //                                     />
+    //                                 )}
+    //                             </div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //                 <div ref={messagesEndRef} />
+    //             </div>
+    //         </div>
+    //     );
+    // };
     
     
     const OptionCard = ({ option, onClick, isSelected }) => (
@@ -308,7 +400,7 @@ const Agent = () => {
         };
     
         if (isSubmitted) {
-            return null; // Remove the component from the DOM after submission
+            return null; 
         }
     
         return (
@@ -443,7 +535,6 @@ const Agent = () => {
             </button>
         );
     };
-
     const handleMessageSend = async (input, displayMessage = true, actualOTP = null) => {
         const initialMessage = "Hey BARTGenie, I want to reset my password";
     
@@ -570,6 +661,9 @@ const Agent = () => {
             setIsLoading(false);
         }
     };
+
+ 
+
     const processAndDisplayResponse = async (fullResponse, displayMessage) => {
         console.log("processAndDisplayResponse called with:", fullResponse, displayMessage);
 
@@ -627,6 +721,9 @@ const Agent = () => {
             await storeMessage(fullResponse, false);
         }
     };
+
+
+    
     const ChatInput = ({ onSend, isLoading, isOTPActive }) => {
         const [input, setInput] = useState('');
     

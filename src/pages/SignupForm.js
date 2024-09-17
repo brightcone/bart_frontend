@@ -6,27 +6,34 @@ import backgroundImage from '../assets/sparkles.svg'; // Updated to use sparkles
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; // Import eye icons
 import Genie from '../assets/Genie.svg';
+import BART from '../videos/BART.mp4';
 
 const styles = {
     container: {
         display: 'flex',
+        height: '100vh',
+        width: '100vw',
+        backgroundColor: 'black',
+        backgroundImage: `url(${backgroundImage})`, 
+        backgroundRepeat: 'repeat',
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+        overflow:'hidden'
+    },
+    videoContainer: {
+        flex: 1,
+        display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh', 
-        backgroundColor: 'black',
-        width: '100vw',
-        position: 'relative',
-        overflow: 'hidden', 
-  
-
+        backgroundColor: '#1F1F1F',
+        width:'100%',
+        
     },
-    videoSection: {
-        flex: 1,
-        height: '90vh',
-        backgroundColor: '#000',
-        borderRadius: '50px',  
-        border: '5px solid #000',  
-        boxSizing: 'border-box', 
+    video: {
+        width: '80%',
+        height: '90%',
+        objectFit: 'cover',
+        borderRadius: '30px',
     },
  
     signupSection: {
@@ -37,6 +44,7 @@ const styles = {
         height: '100%',
         padding: '32px',
         backgroundColor: '#1F1F1F',
+        boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.3)',
         overflow: 'hidden', 
         backgroundImage: `url(${backgroundImage})`, 
     },
@@ -59,11 +67,13 @@ const styles = {
         width: '50px',
         height: '50px',
         marginRight: '10px',
+        
     },
     profileText: {
         color: 'white',
         fontSize: '24px',
         fontWeight: 'bold',
+        
     },
     input: {
         width: '95%',
@@ -124,11 +134,7 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
     },
-    video: {
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover', // Ensure the video fills the section without stretching
-    },
+
 };
 
 // AWS configuration remains unchanged
@@ -272,11 +278,16 @@ const SignupPage = () => {
 
     return (
         <div style={styles.container}>
-            {/* Video Section */}
-            <div style={styles.videoSection}>
-                <video autoPlay muted loop style={styles.video}>
-                    <source src="/videos/BART.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
+            
+   
+                <div style={styles.videoContainer}>
+                <video
+                    style={styles.video}
+                    autoPlay
+                    muted
+                    loop
+                >
+                    <source src={BART} type='video/mp4'></source>
                 </video>
             </div>
 
@@ -287,7 +298,7 @@ const SignupPage = () => {
                         <img src={Genie} alt="Genie Logo" style={styles.trainLogo} />
                         <div style={styles.profileText}>BARTGenie</div>
                     </div>
-                    <h2>Signup</h2>
+                    <h2 className='login-font'>Signup</h2>
                     <input
                         type="text"
                         placeholder="Full Name"
