@@ -17,9 +17,6 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import LogoutIcon from "../assets/Genie.svg";
-import UserContext from '../components/UserContext';
-
-
 
 const Agent = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -36,11 +33,10 @@ const Agent = () => {
     const [hasSentVerificationMessage, setHasSentVerificationMessage] = useState(false);
     const [initialPromptProcessed, setInitialPromptProcessed] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
-
-
     const [showLogoutButton, setShowLogoutButton] = useState(false);
     const [scrollStatus, setScrollStatus] = useState(false);
-    
+    const [userEmail, setUserEmail] = useState('');
+    const [showVideoVerification, setShowVideoVerification] = useState(false);
     const navigate = useNavigate();
     const handleTemplateClick = (path) => {
         navigate(path);
@@ -104,10 +100,6 @@ const Agent = () => {
     }, [sessionId, initialPrompt]);
 
     useEffect(() => {
-        endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-
-    useEffect(() => {
         if (isVerificationCompleted && !hasSentVerificationMessage) {
             handleMessageSend("User verified successfully.");
             setHasSentVerificationMessage(true);
@@ -143,41 +135,10 @@ const Agent = () => {
     const ChatMessage = ({ message, userName, messages }) => {
         const profilePhoto = localStorage.getItem("profilePhoto");
         const fullName = localStorage.getItem("fullName");
-        //console.log(`Rendering ChatMessage with Timestamp:`, message.timestamp); // Debug to check the timestamp
-        const messagesEndRef = useRef(null);
-        const chatContainerRef = useRef(null);
-        const [hasScrolled, setHasScrolled] = useState(false);
-    
-        const scrollToBottom = () => {
-            if (!hasScrolled) {
-                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }
-        };
-    
-        // Track if the user has manually scrolled up
-        const handleScroll = () => {
-            if (!chatContainerRef.current) return;
-            const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-            const isAtBottom = scrollHeight - scrollTop <= clientHeight + 100; // 50px threshold
-            setHasScrolled(() => !isAtBottom); // If the user is not at the bottom, they've scrolled
-        };
-    
-        useEffect(() => {
-            const chatContainer = chatContainerRef.current;
-            if (chatContainer) {
-                chatContainer.addEventListener('scroll', handleScroll);
-            }
-            return () => {
-                if (chatContainer) {
-                    chatContainer.removeEventListener('scroll', handleScroll);
-                }
-            };
-        }, []);
-    
-        // Automatically scroll when new messages are added if the user is at/near the bottom
         useEffect(() => {
             scrollToBottom();
-        }, [scrollStatus]);
+        }, [message]);
+    
     
         return (
             <div className="chat-message">
@@ -498,6 +459,7 @@ const Agent = () => {
     };
 
     const typingEffect = (messageText, delay = 50) => {
+        setScrollStatus(false);
         return new Promise(resolve => {
             let currentIndex = 0;
             let interval = setInterval(() => {
@@ -513,6 +475,7 @@ const Agent = () => {
                     });
                     currentIndex++;
                 } else {
+                    setScrollStatus(true);
                     clearInterval(interval);
                     resolve();
                 }
@@ -856,7 +819,8 @@ const Agent = () => {
                         </div>
                     </div>
 
-                    <div className='scrollmessages' style={{ paddingBottom: '80px', color: 'white', overflow: 'auto', maxHeight:'75%' }}>
+                    <div className='scrollmessages'
+                        style={{ paddingBottom: '10px', color: 'white', overflow: 'auto', maxHeight:'75%' }}>
                         {messages.map((message, index) => (
                             <ChatMessage key={index} message={message} />
                         ))}
