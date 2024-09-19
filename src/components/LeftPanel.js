@@ -19,7 +19,7 @@ import arrow from "../assets/arrow-up-right.svg";
 
 const menuItems = [
     { id: 1, name: 'Home', icon: <HomeOutlined />, path: '/' },
-    { id: 2, name: 'New Chat', icon: <AddIcon />, path: '/new-chat' },
+    //{ id: 2, name: 'New Chat', icon: <AddIcon />, path: '/new-chat' },
     { id: 3, name: 'Search', icon: <SearchIcon />, path: '/search' },
     { id: 4, name: 'Templates', icon: <GridViewOutlined />, path: '/templates' },
     { id: 5, name: 'History', icon: <HistoryIcon />, path: '/history' },
