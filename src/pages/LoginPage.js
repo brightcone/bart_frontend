@@ -56,7 +56,7 @@ const styles = {
         alignItems: 'center',
         padding: '20px',
         backgroundColor: '#1F1F1F',
-        boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.3)',
+        // boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.3)',
         backgroundImage:`url(${backgroundImage})`,
         
     },
@@ -191,8 +191,8 @@ const styles = {
 };
 
 const LoginPage = ({ setIsAuthenticated }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('prashanth@brightcone.ai');
+    const [password, setPassword] = useState('Yanthraa@123');
     const [isPhotoLogin, setIsPhotoLogin] = useState(false);
     const [error, setError] = useState('');
     const [loginSuccess, setLoginSuccess] = useState(false);

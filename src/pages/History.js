@@ -49,6 +49,21 @@ const History = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const navigate = useNavigate();
     const [selectedOption, setSelectedOption] = useState(null);
+    const [scrollStatus, setScrollStatus] = useState(false);
+
+    
+    const scrollToBottom = () => {
+        const chatContainer = document.querySelector('.scrollmessages');
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    };
+
+    useEffect(() => {
+        if (messages.length > 0) {
+            setTimeout(scrollToBottom, 100); 
+        }
+    }, [messages]);
 
     useEffect(() => {
         endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -147,7 +162,9 @@ const History = () => {
                 inputRefs.current[index + 1]?.focus();
             }
         };
-    
+        
+       
+
         const handleKeyDown = (index, event) => {
             const isBackspace = event.key === 'Backspace';
             if (isBackspace) {
@@ -369,6 +386,7 @@ const getCurrentTime = () => dayjs().format('HH:mm');
     };
     const typingEffect = async (text, sessionId) => {
         let currentIndex = 0;
+        setScrollStatus(false);
         const typingInterval = 30; // milliseconds per character
     
         while (currentIndex < text.length) {
@@ -382,8 +400,9 @@ const getCurrentTime = () => dayjs().format('HH:mm');
                     newChat[lastMessageIndex] = {
                         ...newChat[lastMessageIndex],
                         text: text.substring(0, currentIndex),
-                    };
+                    }
                 }
+                
                 return newChat;
             });
         }
@@ -507,6 +526,7 @@ const getCurrentTime = () => dayjs().format('HH:mm');
     
                     // Trigger typing effect here
                     await typingEffect(fullResponse, sessionId);
+                    await fetchAgentResponse(fullResponse,sessionId);
     
                     if (newMessage.showVideoVerification) {
                         setFacialAuthLink(newMessage.link);
@@ -549,7 +569,7 @@ const getCurrentTime = () => dayjs().format('HH:mm');
                 ],
             }));
     
-            // Update current chat with the error message
+            
             setCurrentChat(prevChat => [
                 ...prevChat.filter(msg => !msg.isLoading),
                 {
@@ -712,63 +732,14 @@ const getCurrentTime = () => dayjs().format('HH:mm');
         }
     };
 
-  const ChatMessage = ({ message, userName }) => {
-    const [hasScrolled, setHasScrolled] = useState(false);
-    const messagesEndRef = useRef(null);
-    const chatContainerRef = useRef(null);
-
-        const scrollToBottom = () => {
-            if (!hasScrolled) {
-                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }
-        };
-    
-        // Track if the user has manually scrolled up
-        const handleScroll = () => {
-            if (!chatContainerRef.current) return;
-            const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-            const isAtBottom = scrollHeight - scrollTop <= clientHeight + 50; // 50px threshold
-            setHasScrolled(!isAtBottom); // If the user is not at the bottom, they've scrolled
-        };
-    
-        useEffect(() => {
-            const chatContainer = chatContainerRef.current;
-            if (chatContainer) {
-                chatContainer.addEventListener('scroll', handleScroll);
-            }
-            return () => {
-                if (chatContainer) {
-                    chatContainer.removeEventListener('scroll', handleScroll);
-                }
-            };
-        }, []);
-    
-        // Automatically scroll when new messages are added if the user is at/near the bottom
+    const ChatMessage = ({ message, userName, messages }) => {
+        const profilePhoto = localStorage.getItem("profilePhoto");
+        const fullName = localStorage.getItem("fullName");
         useEffect(() => {
             scrollToBottom();
-        }, [messages]);
-
-    if (message.isLoading) {
-        return (
-            <div className="chat-message">
-                <div className="message-row agent">
-                    <img src={ChatLogo} alt="BART Genie" className="avatar" />
-                    <div className="message-info">
-                        <div className="header">
-                            <span className="agent-name">BART Genie</span>
-                            <span style={{ display: 'inline-block', width: '3px', height: '3px', backgroundColor: 'white', borderRadius: '100%', paddingLeft: '0.5px', marginLeft: '5px' }}></span>
-                            <span className="timestamp" style={{ fontSize: '14px' }}>
-                                {message.timestamp}
-                            </span>
-                        </div>
-                        <div className="message-text">
-                            <DotLoader />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+        }, [message]);
+    
+    
         return (
             <div className="chat-message">
                 <div className={`message-row ${message.isUserMessage ? 'user' : 'agent'}`}>
@@ -786,66 +757,61 @@ const getCurrentTime = () => dayjs().format('HH:mm');
                             )}
                             <span style={{ display: 'inline-block', width: '3px', height: '3px', backgroundColor: 'white', borderRadius: '100%', paddingLeft: '0.5px', marginLeft: '5px' }}></span>
                             <span className="timestamp" style={{ fontSize: '14px' }}>
-                                {message.timestamp}
+                                {message.timestamp || ' '}
                             </span>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                {(message.showOptions || message.showOTP || message.showVideoVerification || message.ticketInfo) && (
-                                    <div className="gradient-bar" style={{ display: 'flex' }}></div>
-                                )}
+                            {(message.showOptions || message.showOTP || message.showVideoVerification || message.ticketInfo) && (
+                                <div className="gradient-bar" style={{ display: 'flex' }}></div>
+                            )}
                             <div>
-                            
-                                <div>
-                                        <div className="message-text">
-                                            {message.text === "Done" ? "Done" : message.text}
-                                        </div>
-                                        {message.showOptions && (
-                                            <div className="option-cards">
-                                                {options.map((option) => (
-                                                    <OptionCard
-                                                        key={option.id}
-                                                        option={option}
-                                                        onClick={() => handleOptionClick(option)}
-                                                        isSelected={selectedOption === option.id}
-                                                    />
-                                                ))}
-                                            </div>
-                                        )}
-                                        {message.showOTP && (
-                                            <OTPInputCard
-                                                otp={otp}
-                                                setOtp={setOtp}
-                                                onSubmitOTP={(displayText) =>
-                                                    handleMessageSend(displayText, true, otp.join(''))
-                                                }
-                                            />
-                                        )}
-                                        {message.showVideoVerification && message.videoVerificationCard && (
-                                            <VideoVerificationCard
-                                                link={message.link}
-                                                onVerificationComplete={handleAuthComplete}
-                                            />
-                                        )}
-                                        {message.ticketInfo && message.ticketInfo.showTicket && (
-                                            <TicketCard
-                                                ticketNo={message.ticketInfo.ticketNo}
-                                                link={message.ticketInfo.link}
-                                                assignedTo={message.ticketInfo.assignedTo}
-                                                time={message.ticketInfo.time}
-                                            />
-                                        )}
-                                    </div>
+                                <div className="message-text">
+                                    {message.text === "Done" ? "Done" : message.text}
                                 </div>
-
+                                {message.showOptions && (
+                                    <div className="option-cards">
+                                        {options.map((option) => (
+                                            <OptionCard
+                                                key={option.id}
+                                                option={option}
+                                                onClick={() => handleOptionClick(option)}
+                                                isSelected={selectedOption === option.id}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                                {message.showOTP && (
+                                    <OTPInputCard
+                                        otp={otp}
+                                        setOtp={setOtp}
+                                        onSubmitOTP={(displayText) =>
+                                            handleMessageSend(displayText, true, otp.join(''))
+                                        }
+                                    />
+                                )}
+                                {message.showVideoVerification && message.videoVerificationCard && (
+                                    <VideoVerificationCard
+                                        link={message.link}
+                                        onVerificationComplete={handleAuthComplete}
+                                    />
+                                )}
+                                {message.ticketInfo && message.ticketInfo.showTicket && (
+                                    <TicketCard
+                                        ticketNo={message.ticketInfo.ticketNo}
+                                        link={message.ticketInfo.link}
+                                        assignedTo={message.ticketInfo.assignedTo}
+                                        time={message.ticketInfo.time}
+                                    />
+                                )}
                             </div>
                         </div>
-                        <div ref={messagesEndRef} />
-
                     </div>
                 </div>
-           
+            </div>
         );
     };
+
+
 
     const filteredSessions = Object.entries(messagesBySession).filter(([sessionId, messages]) => {
         const sessionTitle = generateSessionTitle(messages);
@@ -921,7 +887,7 @@ const getCurrentTime = () => dayjs().format('HH:mm');
                                 </Menu>
                             </div>
                             
-                            <div ref={chatContainerRef} className="chat-message-container" style={{ overflowY: 'auto', maxHeight: '500px' }}>
+                            <div ref={chatContainerRef} className="chat-message-container" style={{ overflowY: 'auto', maxHeight: '75%' }}>
                                 {currentChat.map((msg, index) => (
                                     <ChatMessage
                                         key={index}
@@ -951,6 +917,7 @@ const getCurrentTime = () => dayjs().format('HH:mm');
                             overflowY: 'scroll', 
                             scrollbarWidth: 'none', 
                             outline:'none',
+                            fontFamily:'sans-serif'
                         }}
                         className="hidden-scrollbar"
                     />
