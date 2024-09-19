@@ -44,7 +44,7 @@ const styles = {
         height: '100%',
         padding: '32px',
         backgroundColor: '#1F1F1F',
-        boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.3)',
+        //boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.3)',
         overflow: 'hidden', 
         backgroundImage: `url(${backgroundImage})`, 
     },

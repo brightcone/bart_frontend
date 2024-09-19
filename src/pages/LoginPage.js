@@ -56,7 +56,7 @@ const styles = {
         alignItems: 'center',
         padding: '20px',
         backgroundColor: '#1F1F1F',
-        boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.3)',
+        // boxShadow: '-4px 0 6px rgba(0, 0, 0, 0.3)',
         backgroundImage:`url(${backgroundImage})`,
         
     },
