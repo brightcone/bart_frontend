@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; // Import eye icons
 import Genie from '../assets/Genie.svg';
 import BART from '../videos/BART.mp4';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const styles = {
     container: {
@@ -205,7 +207,7 @@ const SignupPage = () => {
             
                     const result = await response.json();
                     console.log('User created:', result);
-                    
+                    const userId = uuidv4(); // Generate a unique ID for the user
                     // Decode base64 image
                     const base64Image = capturedImage.split(',')[1];
                     const binaryImage = atob(base64Image);
@@ -234,6 +236,7 @@ const SignupPage = () => {
                         Bucket: process.env.REACT_APP_S3_BUCKET,
                         Key: `facialdata/data/${email}.json`, // Separate folder for data
                         Body: JSON.stringify({
+                            userId,
                             email,
                             password,
                             profilePhoto: `facialdata/profile_images/${email}.jpg`,

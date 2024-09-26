@@ -6,7 +6,7 @@ import trainLogo from '../assets/image 45.svg';
 import background from '../assets/b1.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; // Import eye icons
-
+import { v4 as uuidv4 } from 'uuid';
 
 
 const styles = {
@@ -218,7 +218,7 @@ const SignupPage = () => {
             navigate('/login');
         } catch (err) {
             console.error('Signup failed:', err);
-            setError('Signup failed. Please try again later.');
+            setError('Signup failed. Please try again later.'+err);
         }
     };
 
