@@ -284,40 +284,68 @@ const FacialAuthComponent = ({ link, onClose, onComplete }) => {
 
     const handlePhotoLogin = async (binaryImage) => {
         try {
-            const allUsersParams = {
+            console.log('Starting photo login process');
+    
+            // Fetch user data from S3 using the email to retrieve the profile photo
+            console.log('Fetching user data from S3 with email:', email);
+            const userParams = {
                 Bucket: 'face-authen',
-                Prefix: 'facialdata/profile_images/',
+                Key: `facialdata/data/${email}.json`, // Use email to fetch user data
             };
-            const allUsers = await s3.listObjectsV2(allUsersParams).promise();
+    
+            // Get user data (JSON) from S3
+            const userData = await s3.getObject(userParams).promise();
+            console.log('User data retrieved successfully:', userData);
+    
+            const user = JSON.parse(userData.Body.toString());
+            console.log('Parsed user data:', user);
+    
+            // Extract profilePhoto path from the user's data
+            const profilePhotoKey = user.profilePhoto; // Example: `facialdata/profile_images/${email}.jpg`
+            console.log('Profile photo key extracted:', profilePhotoKey);
+    
+            // Retrieve the user's profile photo from S3 using the key stored in user data
+            console.log('Fetching profile image from S3 with key:', profilePhotoKey);
+            const profileImageParams = {
+                Bucket: 'face-authen',
+                Key: profilePhotoKey, // Use the profilePhoto key from the user data
+            };
+    
+            const profileImageData = await s3.getObject(profileImageParams).promise();
+            console.log('Profile image data retrieved successfully');
+    
+            // Compare the provided binary image with the user's profile photo
+            console.log('Initiating face comparison between input image and profile image');
+            const compareFacesParams = {
+                SourceImage: { Bytes: binaryImage }, // The image provided for login
+                TargetImage: { Bytes: profileImageData.Body } // The user's stored profile image
+            };
+    
+            // Use AWS Rekognition to compare the faces
+            const compareFacesResult = await rekognition.compareFaces(compareFacesParams).promise();
+            console.log('Face comparison result:', compareFacesResult);
+    
             let faceMatchFound = false;
-
-            for (let item of allUsers.Contents) {
-                const photoKey = item.Key;
-                const photoData = await s3.getObject({ Bucket: 'face-authen', Key: photoKey }).promise();
-
-                const compareFacesParams = {
-                    SourceImage: { Bytes: binaryImage },
-                    TargetImage: { Bytes: photoData.Body }
-                };
-
-                const compareFacesResult = await rekognition.compareFaces(compareFacesParams).promise();
-
-                if (compareFacesResult.FaceMatches && compareFacesResult.FaceMatches.length > 0) {
-                    const match = compareFacesResult.FaceMatches[0];
-                    if (match.Face.Confidence > 90) {
-                        faceMatchFound = true;
-                        break;
-                    }
+            if (compareFacesResult.FaceMatches && compareFacesResult.FaceMatches.length > 0) {
+                const match = compareFacesResult.FaceMatches[0];
+                console.log('Face match found with confidence:', match.Face.Confidence);
+    
+                if (match.Face.Confidence > 90) {
+                    faceMatchFound = true;
                 }
+            } else {
+                console.log('No face matches found.');
             }
-
+    
             if (faceMatchFound) {
+                console.log('Face recognized successfully. Proceeding with authentication.');
                 stopAnalysis();
                 setShowGif(true);
                 setTimeout(() => {
                     handleAuthSuccess();
                 }, 6000);
             } else {
+                console.log('Face not recognized. Showing error message.');
                 stopAnalysis();
                 setError('Face not recognized. Please try again.');
             }
@@ -326,6 +354,7 @@ const FacialAuthComponent = ({ link, onClose, onComplete }) => {
             setError('Photo login failed. Please try again.');
         }
     };
+    
 
     return (
         <div style={styles.webcamContainer}>
